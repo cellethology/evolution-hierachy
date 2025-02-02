@@ -39,16 +39,15 @@ class LayeredSystem:
 
     def _generate_matrix_with_rank(self, input_dim, rank_fraction=1.0):
         """Generate a matrix with controlled rank"""
-        target_rank = int(input_dim * rank_fraction)
-        U = np.random.randn(input_dim, input_dim)
-        V = np.random.randn(input_dim, input_dim)
-        U, _ = np.linalg.qr(U)
-        V, _ = np.linalg.qr(V)
-
         if rank_fraction == 1.0:
             s = np.random.randn(input_dim, input_dim)
             return s
         else:
+            target_rank = int(input_dim * rank_fraction)
+            U = np.random.randn(input_dim, input_dim)
+            V = np.random.randn(input_dim, input_dim)
+            U, _ = np.linalg.qr(U)
+            V, _ = np.linalg.qr(V)
             s = np.zeros(input_dim)
             s[:target_rank] = 1.0
             return U @ np.diag(s) @ V.T
@@ -88,7 +87,7 @@ class LayeredSystem:
             # Invert the matrix multiplication: forward was (current @ M[d].T),
             # so backward is multiply by pinv(M[d].T).
             # pinv(M[d].T) = (pinv(M[d]))^T, but we can just do pinv on the transpose directly.
-            M_d_T_pinv = np.linalg.inv(self.matrices[d].T)
+            M_d_T_pinv = np.linalg.pinv(self.matrices[d].T)
             current = current @ M_d_T_pinv
             outputs.append(current.copy())
 

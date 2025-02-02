@@ -44,7 +44,10 @@ def run_evolution(
     optimal_outputs = system._backward_pass(optimal_direction.reshape(1, -1))
 
     # Verify the inferred optimal leads to the optimal_direction
-    inferred = system._forward_pass(optimal_outputs[0])[-1]
+    inferred = system._forward_pass(optimal_outputs[0])[0]
+    # population = np.tile(inferred, (population.shape[0], 1))
+    # noise = np.random.normal(0, 0.0001, population.shape)
+    # population += noise
     # print(inferred)
     # print(optimal_direction)
     # print(np.allclose(inferred, optimal_direction, atol=1e-6, rtol=1e-5))

@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.10.19"
-app = marimo.App(width="medium", auto_download=["ipynb"])
+app = marimo.App(width="columns", auto_download=["ipynb"])
 
 
 @app.cell
@@ -30,14 +30,14 @@ def _():
 @app.cell
 def _(parallel_run_evolution):
     # Evolution simulation
-    n_runs = 500
+    n_runs = 80
     layer_stats = parallel_run_evolution(
         n_runs,
-        n_generations=200,
-        population_size=500,
-        selection_fraction=0.3,
+        n_generations=250,
+        population_size=10000,
+        selection_fraction=0.001,
         mutation_std=0.01,
-        max_depth=3,
+        max_depth=2,
         normalize=False,
         use_sigmoid=False,
     )
