@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.19"
+__generated_with = "0.10.2"
 app = marimo.App(width="columns", auto_download=["ipynb"])
 
 
@@ -35,10 +35,10 @@ def _(parallel_run_evolution):
         n_runs,
         n_generations=1000,
         population_size=100,
-        selection_fraction=0.99,
+        selection_fraction=0.9,
         mutation_std=1,
-        max_depth=3,
-        dim=200,
+        max_depth=5,
+        dim=50,
         normalize=False,
         use_sigmoid=False,
     )
