@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.2"
+__generated_with = "0.10.19"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 
@@ -11,12 +11,14 @@ def _():
     from tqdm import tqdm
     from scipy.special import expit
     import concurrent.futures
+    import marimo as mo
 
     from evolution import parallel_run_evolution
     from plotting import plot_layer_evolution
     return (
         concurrent,
         expit,
+        mo,
         np,
         parallel_run_evolution,
         plot_layer_evolution,
@@ -44,7 +46,7 @@ def _(parallel_run_evolution):
 
 @app.cell
 def _(layer_stats, plot_layer_evolution):
-    plot_layer_evolution(layer_stats, save=True)
+    plot_layer_evolution(layer_stats, save=False)
     return
 
 
