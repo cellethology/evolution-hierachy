@@ -61,6 +61,6 @@ def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=
     plt.tight_layout()
 
     if save:
-        plt.savefig("layerwise_evolution.pdf", format="pdf", dpi=300)
+        plt.savefig("output/layerwise_evolution.pdf", format="pdf", dpi=300)
 
     plt.show()
