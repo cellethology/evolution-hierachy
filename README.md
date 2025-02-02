@@ -36,7 +36,7 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-## Running NeuroEvo
+## Running simulation
 
 Once the installation is complete, you can run the main simulation using marimo:
 
