@@ -73,7 +73,9 @@ def run_evolution(
         # Mutation
         n_offspring = population_size - n_select
         offspring = selected[np.random.choice(n_select, n_offspring)]
-        offspring += np.random.randn(n_offspring, system.dim) * mutation_std
+        offspring += np.random.randn(n_offspring, system.dim) * (
+            mutation_std / np.sqrt(system.dim)
+        )
 
         # Create new population
         population = np.vstack([selected, offspring])

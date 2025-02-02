@@ -33,11 +33,12 @@ def _(parallel_run_evolution):
     n_runs = 80
     layer_stats = parallel_run_evolution(
         n_runs,
-        n_generations=250,
-        population_size=10000,
-        selection_fraction=0.001,
-        mutation_std=0.01,
-        max_depth=2,
+        n_generations=1000,
+        population_size=100,
+        selection_fraction=0.99,
+        mutation_std=1,
+        max_depth=3,
+        dim=200,
         normalize=False,
         use_sigmoid=False,
     )
