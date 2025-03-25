@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.cm import get_cmap
 
 def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=False):
     """
@@ -65,8 +65,14 @@ def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=
 
     plt.show()
 
-
-def plot_stacked_ancestry_grid(ancestry_matrices, n_cols=3, figsize=(15, 8), titles=None, save=False):
+def plot_stacked_ancestry_grid(
+    ancestry_matrices,
+    n_cols=3,
+    figsize=(15, 8),
+    titles=None,
+    colormap="viridis",
+    top_n_colored=10, 
+    save=False):
     """
     ancestry_matrices: list of ancestry matrices (each of shape n_ancestors x n_generations)
     n_cols: number of columns in the grid
@@ -86,10 +92,20 @@ def plot_stacked_ancestry_grid(ancestry_matrices, n_cols=3, figsize=(15, 8), tit
         generations = range(n_generations)
 
         # Sort by final contribution for consistent layering
-        sorted_indices = np.argsort(-ancestry_matrix[:, -1])
+        total_contribution = ancestry_matrix.sum(axis=1)
+        sorted_indices = np.argsort(-total_contribution)
         sorted_ancestry = ancestry_matrix[sorted_indices]
 
-        ax.stackplot(generations, sorted_ancestry, alpha=0.9)
+        # Create a colormap with unique colors for top N contributors
+        cmap = get_cmap(colormap)
+        colors = [None] * n_ancestors
+        for j in range(n_ancestors):
+            if j < top_n_colored:
+                colors[j] = cmap(j / top_n_colored)  # assign distinct color
+            else:
+                colors[j] = (0.7, 0.7, 0.7, 0.3)  # gray-ish, semi-transparent
+
+        ax.stackplot(generations, sorted_ancestry, colors=colors, alpha=0.95)
         ax.set_title(titles[i] if titles and i < len(titles) else f"Run {i+1}")
         ax.set_xlabel("generation")
         ax.set_ylabel("proportion")
