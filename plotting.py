@@ -100,7 +100,7 @@ def plot_stacked_ancestry_grid(ancestry_matrices, n_cols=3, figsize=(15, 8), tit
     for j in range(n_plots, len(axes)):
         axes[j].axis("off")
 
-    plt.suptitle("Ancestry composition over time (across runs)", fontsize=16)
+    plt.suptitle("Ancestry composition over time (across runs)", fontsize=22)
     plt.tight_layout(rect=[0, 0, 1, 0.96])
 
     if save:
