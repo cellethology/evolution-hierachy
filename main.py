@@ -21,7 +21,7 @@ def _():
 @app.cell
 def _(evolution):
     # Evolution simulation
-    n_runs = 32
+    n_runs = 64
     layer_stats = evolution.parallel_run_evolution(
         n_runs,
         n_generations=1000,
@@ -44,7 +44,7 @@ def _(layer_stats, plotting):
 @app.cell
 def _(layer_stats, plotting):
     plotting.plot_stacked_ancestry_grid(
-        layer_stats["ancestry_proportions"], figsize=(15, 30), n_cols=4, save=True
+        layer_stats["ancestry_proportions"], figsize=(5*8, 5*8), n_cols=8, save=True
     )
     return
 
