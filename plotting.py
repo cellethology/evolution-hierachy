@@ -70,7 +70,7 @@ def plot_stacked_ancestry_grid(
     n_cols=3,
     figsize=(15, 8),
     titles=None,
-    colormap="viridis",
+    colormap="tab10",
     top_n_colored=10, 
     save=False):
     """
