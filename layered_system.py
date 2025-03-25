@@ -99,9 +99,9 @@ class LayeredSystem:
         """Inverse of sigmoid: logit(u) = ln(u/(1-u))."""
         return np.log(u / (1.0 - u))
 
-    def _compute_angles(self, vectors, reference):
+    def _compute_cossim(self, vectors, reference):
         """Compute angles between vectors and a reference vector"""
-        cos_dist = np.sum(vectors * reference, axis=1) / (
+        cossim = np.sum(vectors * reference, axis=1) / (
             np.linalg.norm(vectors, axis=1) * np.linalg.norm(reference)
         )
-        return cos_dist
+        return cossim

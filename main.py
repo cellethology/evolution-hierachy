@@ -13,32 +13,22 @@ def _():
     import concurrent.futures
     import marimo as mo
 
-    from evolution import parallel_run_evolution
-    from plotting import plot_layer_evolution
-    return (
-        concurrent,
-        expit,
-        mo,
-        np,
-        parallel_run_evolution,
-        plot_layer_evolution,
-        plt,
-        tqdm,
-    )
+    import evolution
+    import plotting
+    return concurrent, evolution, expit, mo, np, plotting, plt, tqdm
 
 
 @app.cell
-def _(parallel_run_evolution):
+def _(evolution):
     # Evolution simulation
-    n_runs = 1
-    layer_stats = parallel_run_evolution(
+    n_runs = 32
+    layer_stats = evolution.parallel_run_evolution(
         n_runs,
-        n_generations=500,
-        population_size=5000,
-        selection_fraction=0.5,
-        mutation_std=0.5,
-        max_depth=1,
-        dim=100,
+        n_generations=1000,
+        population_size=1000,
+        mutation_std=0.3,
+        max_depth=3,
+        dim=10,
         normalize=False,
         use_sigmoid=False,
     )
@@ -46,8 +36,16 @@ def _(parallel_run_evolution):
 
 
 @app.cell
-def _(layer_stats, plot_layer_evolution):
-    plot_layer_evolution(layer_stats, save=False)
+def _(layer_stats, plotting):
+    plotting.plot_layer_evolution(layer_stats, save=True)
+    return
+
+
+@app.cell
+def _(layer_stats, plotting):
+    plotting.plot_stacked_ancestry_grid(
+        layer_stats["ancestry_proportions"], figsize=(15, 30), n_cols=4, save=True
+    )
     return
 
 

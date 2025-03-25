@@ -64,3 +64,45 @@ def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=
         plt.savefig("output/layerwise_evolution.pdf", format="pdf", dpi=300)
 
     plt.show()
+
+
+def plot_stacked_ancestry_grid(ancestry_matrices, n_cols=3, figsize=(15, 8), titles=None, save=False):
+    """
+    ancestry_matrices: list of ancestry matrices (each of shape n_ancestors x n_generations)
+    n_cols: number of columns in the grid
+    figsize: overall figure size
+    titles: optional list of titles for each subplot
+    """
+    n_plots = len(ancestry_matrices)
+    n_rows = int(np.ceil(n_plots / n_cols))
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize, squeeze=False)
+    axes = axes.flatten()
+
+    for i, ancestry_matrix in enumerate(ancestry_matrices):
+        ax = axes[i]
+
+        n_ancestors, n_generations = ancestry_matrix.shape
+        generations = range(n_generations)
+
+        # Sort by final contribution for consistent layering
+        sorted_indices = np.argsort(-ancestry_matrix[:, -1])
+        sorted_ancestry = ancestry_matrix[sorted_indices]
+
+        ax.stackplot(generations, sorted_ancestry, alpha=0.9)
+        ax.set_title(titles[i] if titles and i < len(titles) else f"Run {i+1}")
+        ax.set_xlabel("generation")
+        ax.set_ylabel("proportion")
+
+        ax.grid(True, linestyle="--", alpha=0.4)
+
+    # Turn off any unused subplots
+    for j in range(n_plots, len(axes)):
+        axes[j].axis("off")
+
+    plt.suptitle("Ancestry composition over time (across runs)", fontsize=16)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+
+    if save:
+        plt.savefig("output/ancestry_over_generation.jpeg", format="jpeg", dpi=300)
+    plt.show()

@@ -34,9 +34,6 @@ def run_evolution(
     # Initialize ancestry
     ancestry = np.eye(population_size)
 
-    # Track ancestry proportisons over time
-    ancestry_proportions = np.zeros((n_generations, population_size))
-
     # Generate optimal direction
     optimal_direction = uniform_sphere_gaussian(1, dim=system.dim)[0]
 
@@ -44,6 +41,7 @@ def run_evolution(
     layer_stats = {
         "mean": np.zeros((system.max_depth + 1, n_generations)),
         "stdev": np.zeros((system.max_depth + 1, n_generations)),
+        "ancestry_proportions": np.zeros((population_size, n_generations)),
     }
 
     # Compute optimal outputs at each layer
@@ -57,29 +55,31 @@ def run_evolution(
         for layer_idx, (layer_out, opt_out) in enumerate(
             zip(layer_outputs, optimal_outputs)
         ):
-            angles = system._compute_angles(layer_out, opt_out[0])
+            angles = system._compute_cossim(layer_out, opt_out[0])
             layer_stats["mean"][layer_idx, gen] = np.mean(angles)
             layer_stats["stdev"][layer_idx, gen] = np.std(angles)
+            layer_stats["ancestry_proportions"][:,gen] = np.mean(
+              ancestry, axis=0
+          )  # Track ancestry proportions
 
         # Selection
-        final_angles = system._compute_angles(layer_outputs[-1], optimal_outputs[-1])
-        n_select = int(population_size * selection_fraction)
-        selected_idx = np.argsort(-final_angles)[:n_select]
-        selected = population[selected_idx]
-        selected_ancestry = ancestry[selected_idx]
+        cossim = system._compute_cossim(layer_outputs[-1], optimal_outputs[-1])
+        # n_select = int(population_size * selection_fraction)
+        # selected_idx = np.argsort(-cossim)[:n_select]
+        fitness = cossim - cossim.min() + 1e-8  # shift to avoid negatives
+        selection_probs = fitness / np.sum(fitness)
+        parent_indices = np.random.choice(population_size, size=population_size, p=selection_probs)
+        offspring = population[parent_indices]
+        ancestry = ancestry[parent_indices]
 
         # Mutation
-        parent_indices = np.random.choice(n_select, population_size)
-        offspring = selected[parent_indices]
+        # offspring = selected[parent_indices]
         offspring += np.random.randn(population_size, system.dim) * (
             mutation_std / np.sqrt(system.dim)
         )
 
         # Create new ancestry matrix
-        offspring_ancestry = selected_ancestry[parent_indices]
-        ancestry_proportions[gen] = np.mean(
-            offspring_ancestry, axis=0
-        )  # Track ancestry proportions
+        # ancestry = selected_ancestry[parent_indices]
 
         # Create new population
         population = offspring / np.linalg.norm(offspring, axis=1, keepdims=True)
@@ -90,10 +90,7 @@ def run_evolution(
         layer_stats["mean"] /= factor
         layer_stats["stdev"] /= factor
 
-    return {
-        "layer_stats": layer_stats,
-        "ancestry_proportions": ancestry_proportions,
-    }
+    return layer_stats
 
 
 def run_evolution_with_kwargs(kwargs):
@@ -113,10 +110,12 @@ def parallel_run_evolution(n_runs, **kwargs):
 
     # Aggregate results
     aggregated_results = {}
-    for key in ["mean", "stdev"]:
+    for key in ["mean", "stdev", "ancestry_proportions"]:
         values = np.array([result[key] for result in results])
         if key == "mean":
             aggregated_results[key] = np.mean(values, axis=0)
-        if key == "stdev":
+        elif key == "stdev":
             aggregated_results[key] = np.std(values, axis=0)
+        elif key == "ancestry_proportions":
+            aggregated_results[key] = values  # don't aggregate ancestry proportions
     return aggregated_results
