@@ -91,7 +91,7 @@ def plot_stacked_ancestry_grid(
         n_ancestors, n_generations = ancestry_matrix.shape
         generations = range(n_generations)
 
-        # Sort by final contribution for consistent layering
+        # Sort ancestors by total contribution (area under the curve)
         total_contribution = ancestry_matrix.sum(axis=1)
         sorted_indices = np.argsort(-total_contribution)
         sorted_ancestry = ancestry_matrix[sorted_indices]
