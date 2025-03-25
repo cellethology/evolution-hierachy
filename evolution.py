@@ -31,6 +31,12 @@ def run_evolution(
     # Initialize with random population
     population = uniform_sphere_gaussian(population_size, dim=system.dim)
 
+    # Initialize ancestry
+    ancestry = np.eye(population_size)
+
+    # Track ancestry proportisons over time
+    ancestry_proportions = np.zeros((n_generations, population_size))
+
     # Generate optimal direction
     optimal_direction = uniform_sphere_gaussian(1, dim=system.dim)[0]
 
@@ -60,17 +66,23 @@ def run_evolution(
         n_select = int(population_size * selection_fraction)
         selected_idx = np.argsort(-final_angles)[:n_select]
         selected = population[selected_idx]
+        selected_ancestry = ancestry[selected_idx]
 
         # Mutation
-        n_offspring = population_size - n_select
-        offspring = selected[np.random.choice(n_select, n_offspring)]
-        offspring += np.random.randn(n_offspring, system.dim) * (
+        parent_indices = np.random.choice(n_select, population_size)
+        offspring = selected[parent_indices]
+        offspring += np.random.randn(population_size, system.dim) * (
             mutation_std / np.sqrt(system.dim)
         )
 
+        # Create new ancestry matrix
+        offspring_ancestry = selected_ancestry[parent_indices]
+        ancestry_proportions[gen] = np.mean(
+            offspring_ancestry, axis=0
+        )  # Track ancestry proportions
+
         # Create new population
-        population = np.vstack([selected, offspring])
-        population = population / np.linalg.norm(population, axis=1, keepdims=True)
+        population = offspring / np.linalg.norm(offspring, axis=1, keepdims=True)
 
     # Mean standardize to first generation
     if normalize:
@@ -78,7 +90,10 @@ def run_evolution(
         layer_stats["mean"] /= factor
         layer_stats["stdev"] /= factor
 
-    return layer_stats
+    return {
+        "layer_stats": layer_stats,
+        "ancestry_proportions": ancestry_proportions,
+    }
 
 
 def run_evolution_with_kwargs(kwargs):

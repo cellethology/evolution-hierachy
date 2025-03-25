@@ -30,7 +30,7 @@ def _():
 @app.cell
 def _(parallel_run_evolution):
     # Evolution simulation
-    n_runs = 200
+    n_runs = 1
     layer_stats = parallel_run_evolution(
         n_runs,
         n_generations=500,
