@@ -4,11 +4,35 @@ import concurrent.futures
 from layered_system import LayeredSystem, uniform_sphere_gaussian
 
 
+def compute_cosine_similarity_subset(layer_outputs, optimal_output, dims):
+    """Compute cosine similarity on a subset of dimensions for each vector."""
+    return np.array(
+        [
+            np.dot(vec[dims], optimal_output[dims])
+            / (np.linalg.norm(vec[dims]) * np.linalg.norm(optimal_output[dims]) + 1e-8)
+            for vec in layer_outputs
+        ]
+    )
+
+
+def mutate_population_subset(population, mutation_std, mutation_rate):
+    """Mutate a subset of components in the population vectors (fast, probabilistic version)."""
+    num_individuals, dim = population.shape
+
+    mutation_mask = np.random.rand(num_individuals, dim) < mutation_rate
+    mutations = np.random.normal(
+        loc=0.0, scale=mutation_std / np.sqrt(dim), size=(num_individuals, dim)
+    )
+    population[mutation_mask] += mutations[mutation_mask]
+    return population
+
+
 def run_evolution(
     n_generations=10,
     population_size=1000,
-    selection_fraction=0.1,
     mutation_std=0.1,
+    eval_fraction=0.5,
+    mutation_rate=0.1,
     dim=20,
     use_sigmoid=False,
     rank_fraction=1,
@@ -37,6 +61,11 @@ def run_evolution(
     # Generate optimal direction
     optimal_direction = uniform_sphere_gaussian(1, dim=system.dim)[0]
 
+    # Select subset of dimensions for fitness evaluation
+    eval_dims = np.random.choice(
+        system.dim, size=int(system.dim * eval_fraction), replace=False
+    )
+
     # Track mean and standard deviation at each layer
     layer_stats = {
         "mean": np.zeros((system.max_depth + 1, n_generations)),
@@ -58,28 +87,24 @@ def run_evolution(
             angles = system._compute_cossim(layer_out, opt_out[0])
             layer_stats["mean"][layer_idx, gen] = np.mean(angles)
             layer_stats["stdev"][layer_idx, gen] = np.std(angles)
-            layer_stats["ancestry_proportions"][:,gen] = np.mean(
-              ancestry, axis=0
-          )  # Track ancestry proportions
+            layer_stats["ancestry_proportions"][:, gen] = np.mean(
+                ancestry, axis=0
+            )  # Track ancestry proportions
 
         # Selection
-        cossim = system._compute_cossim(layer_outputs[-1], optimal_outputs[-1])
-        # n_select = int(population_size * selection_fraction)
-        # selected_idx = np.argsort(-cossim)[:n_select]
+        cossim = compute_cosine_similarity_subset(
+            layer_outputs[-1], optimal_outputs[-1][0], eval_dims
+        )
         fitness = cossim - cossim.min() + 1e-8  # shift to avoid negatives
         selection_probs = fitness / np.sum(fitness)
-        parent_indices = np.random.choice(population_size, size=population_size, p=selection_probs)
+        parent_indices = np.random.choice(
+            population_size, size=population_size, p=selection_probs
+        )
         offspring = population[parent_indices]
         ancestry = ancestry[parent_indices]
 
         # Mutation
-        # offspring = selected[parent_indices]
-        offspring += np.random.randn(population_size, system.dim) * (
-            mutation_std / np.sqrt(system.dim)
-        )
-
-        # Create new ancestry matrix
-        # ancestry = selected_ancestry[parent_indices]
+        offspring = mutate_population_subset(offspring, mutation_std, mutation_rate)
 
         # Create new population
         population = offspring / np.linalg.norm(offspring, axis=1, keepdims=True)
@@ -119,3 +144,21 @@ def parallel_run_evolution(n_runs, **kwargs):
         elif key == "ancestry_proportions":
             aggregated_results[key] = values  # don't aggregate ancestry proportions
     return aggregated_results
+
+
+if __name__ == "__main__":
+    import plotting
+
+    layer_stats = parallel_run_evolution(
+        64,
+        n_generations=10000,
+        population_size=1000,
+        mutation_std=0.3,
+        mutation_rate=0.2,
+        eval_fraction=0.3,
+        max_depth=3,
+        dim=10,
+        normalize=False,
+        use_sigmoid=False,
+    )
+    plotting.plot_layer_evolution(layer_stats, save=False)
