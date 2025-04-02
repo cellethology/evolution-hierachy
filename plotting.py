@@ -182,7 +182,7 @@ def plot_fitness_violin_by_layer(
         axes[i].set_xticks(range(len(layer_counts)))
         axes[i].set_xticklabels([str(layer) for layer in layer_counts])
         if i == 0:
-            axes[i].set_ylabel("normalized fitness", fontsize=12)
+            axes[i].set_ylabel("max fitness - min fitness", fontsize=12)
 
     plt.tight_layout()
 
