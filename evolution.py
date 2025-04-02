@@ -97,8 +97,8 @@ def run_evolution(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
         fitness = cossim - cossim.min() + 1e-1  # shift to avoid negatives
-        layer_stats["fitness"][:, gen] = fitness  # Store fitness
         selection_probs = fitness / np.sum(fitness)
+        layer_stats["fitness"][:, gen] = selection_probs  # Store fitness
         parent_indices = np.random.choice(
             population_size, size=population_size, p=selection_probs
         )
