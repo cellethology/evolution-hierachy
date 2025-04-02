@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.cm import get_cmap
 
+
 def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=False):
     """
     Plot evolution of statistics across generations for multiple layers.
@@ -65,14 +66,16 @@ def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=
 
     plt.show()
 
+
 def plot_stacked_ancestry_grid(
     ancestry_matrices,
     n_cols=3,
     figsize=(15, 8),
     titles=None,
     colormap="tab10",
-    top_n_colored=10, 
-    save=False):
+    top_n_colored=10,
+    save=False,
+):
     """
     ancestry_matrices: list of ancestry matrices (each of shape n_ancestors x n_generations)
     n_cols: number of columns in the grid
@@ -121,4 +124,59 @@ def plot_stacked_ancestry_grid(
 
     if save:
         plt.savefig("output/ancestry_over_generation.jpeg", format="jpeg", dpi=300)
+    plt.show()
+
+
+def plot_fitness_violin_by_layer(
+    fitness_by_layer, generations_to_plot, figsize=(10, 6), save=False
+):
+    """
+    Plot violin plots of normalized fitness across different layer depths for specified generations.
+
+    Parameters
+    ----------
+    fitness_by_layer : dict
+        Dictionary where keys are number of layers (int), and values are fitness matrices
+        of shape (population_size, n_generations).
+    generations_to_plot : list of int
+        List of generation indices to plot.
+    figsize : tuple
+        Size of the overall figure.
+    save : bool
+        Whether to save the plot.
+    """
+
+    layer_counts = sorted(fitness_by_layer.keys())
+    n_generations = len(generations_to_plot)
+
+    _, axes = plt.subplots(1, n_generations, figsize=figsize, sharey=True)
+
+    if n_generations == 1:
+        axes = [axes]
+
+    for i, gen in enumerate(generations_to_plot):
+        data_for_violin = []
+        positions = []
+
+        for j, layer in enumerate(layer_counts):
+            fitness = fitness_by_layer[layer][:, gen]
+            normalized = fitness / np.min(
+                fitness
+            )  # normalize by min value in that generation
+            data_for_violin.append(normalized)
+            positions.append(layer)
+
+        axes[i].violinplot(
+            data_for_violin, positions=positions, showmeans=False, showmedians=True
+        )
+        axes[i].set_title(f"Generation {gen}", fontsize=14)
+        axes[i].set_xlabel("number of layers", fontsize=12)
+        if i == 0:
+            axes[i].set_ylabel("normalized fitness", fontsize=12)
+
+    plt.tight_layout()
+
+    if save:
+        plt.savefig("output/fitness_violin_by_layer.pdf", format="pdf", dpi=300)
+
     plt.show()

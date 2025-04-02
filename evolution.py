@@ -71,6 +71,7 @@ def run_evolution(
         "mean": np.zeros((system.max_depth + 1, n_generations)),
         "stdev": np.zeros((system.max_depth + 1, n_generations)),
         "ancestry_proportions": np.zeros((population_size, n_generations)),
+        "fitness": np.zeros((population_size, n_generations)),
     }
 
     # Compute optimal outputs at each layer
@@ -96,6 +97,7 @@ def run_evolution(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
         fitness = cossim - cossim.min() + 1e-8  # shift to avoid negatives
+        layer_stats["fitness"][:, gen] = fitness  # Store fitness
         selection_probs = fitness / np.sum(fitness)
         parent_indices = np.random.choice(
             population_size, size=population_size, p=selection_probs
