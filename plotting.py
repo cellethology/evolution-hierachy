@@ -164,13 +164,15 @@ def plot_fitness_violin_by_layer(
                 fitness
             )  # normalize by min value in that generation
             data_for_violin.append(normalized)
-            positions.append(layer)
+            positions.append(j)
 
         axes[i].violinplot(
             data_for_violin, positions=positions, showmeans=False, showmedians=True
         )
         axes[i].set_title(f"Generation {gen}", fontsize=14)
         axes[i].set_xlabel("number of layers", fontsize=12)
+        axes[i].set_xticks(range(len(layer_counts)))
+        axes[i].set_xticklabels([str(layer) for layer in layer_counts])
         if i == 0:
             axes[i].set_ylabel("normalized fitness", fontsize=12)
 
