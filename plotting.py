@@ -146,7 +146,7 @@ def plot_fitness_violin_by_layer(
         Whether to save the plot.
     """
 
-    layer_counts = sorted(fitness_by_layer.keys())
+    layer_counts = sorted(fitness_by_layer.keys(), key=lambda x: int(x))
     n_generations = len(generations_to_plot)
 
     _, axes = plt.subplots(1, n_generations, figsize=figsize, sharey=True)
