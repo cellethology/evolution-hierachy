@@ -161,7 +161,7 @@ def plot_fitness_violin_by_layer(
         for j, layer in enumerate(layer_counts):
             fitness = fitness_by_layer[layer][:, gen]
             normalized = fitness / np.min(
-                fitness
+                fitness+1
             )  # normalize by min value in that generation
             data_for_violin.append(normalized)
             positions.append(j)

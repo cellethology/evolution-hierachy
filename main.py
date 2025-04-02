@@ -22,7 +22,7 @@ def _():
 def _(evolution):
     # Evolution simulation
     layer_stats = evolution.parallel_run_evolution(
-        24*6,
+        24 * 6,
         n_generations=100,
         population_size=500,
         mutation_std=0.1,
@@ -43,8 +43,29 @@ def _(layer_stats, plotting):
 
 
 @app.cell
-def _(layer_stats):
-    layer_stats
+def _(evolution):
+    list_of_max_depth = [1, 2]
+    fitness = {}
+    for max_depth in list_of_max_depth:
+        res = evolution.parallel_run_evolution(
+            24 * 6,
+            n_generations=100,
+            population_size=500,
+            mutation_std=0.1,
+            mutation_rate=1,
+            eval_fraction=1,
+            max_depth=max_depth,
+            dim=10,
+            normalize=False,
+            use_sigmoid=False,
+        )
+        fitness[str(max_depth)] = res["fitness"][0]
+    return fitness, list_of_max_depth, max_depth, res
+
+
+@app.cell
+def _(fitness, plotting):
+    plotting.plot_fitness_violin_by_layer(fitness, generations_to_plot=[0])
     return
 
 
@@ -56,6 +77,12 @@ def _():
     #     n_cols=2,
     #     save=False,
     # )
+    return
+
+
+@app.cell
+def _(fitness):
+    fitness['1']
     return
 
 
