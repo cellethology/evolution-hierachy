@@ -168,7 +168,7 @@ def plot_fitness_violin_by_layer(
 
             for run_fitness in fitness_runs:
                 fitness_gen = run_fitness[:, gen]  # (population_size,)
-                normalized = fitness_gen / np.mean(fitness_gen)
+                normalized = np.ptp(fitness_gen)  # peak-to-peak (max - min)
                 all_normalized.extend(normalized)  # flatten across runs
 
             data_for_violin.append(all_normalized)
