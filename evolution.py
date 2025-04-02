@@ -93,10 +93,10 @@ def run_evolution(
             )  # Track ancestry proportions
 
         # Selection
-        cossim = compute_cosine_similarity_subset(
+        fitness = compute_cosine_similarity_subset(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
-        fitness = cossim - cossim.min() + 1e-8  # shift to avoid negatives
+        # fitness = cossim - cossim.min() + 1e-8  # shift to avoid negatives
         layer_stats["fitness"][:, gen] = fitness  # Store fitness
         selection_probs = fitness / np.sum(fitness)
         parent_indices = np.random.choice(
