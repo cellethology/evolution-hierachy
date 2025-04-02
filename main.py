@@ -21,37 +21,46 @@ def _():
 @app.cell
 def _(evolution):
     # Evolution simulation
-    n_runs = 64
     layer_stats = evolution.parallel_run_evolution(
-        n_runs,
-        n_generations=1000,
-        population_size=1000,
-        mutation_std=0.3,
+        24*6,
+        n_generations=100,
+        population_size=500,
+        mutation_std=0.1,
+        mutation_rate=1,
+        eval_fraction=1,
         max_depth=3,
         dim=10,
         normalize=False,
         use_sigmoid=False,
     )
-    return layer_stats, n_runs
+    return (layer_stats,)
 
 
 @app.cell
 def _(layer_stats, plotting):
-    plotting.plot_layer_evolution(layer_stats, save=True)
+    plotting.plot_layer_evolution(layer_stats, save=False)
     return
 
 
 @app.cell
-def _(layer_stats, plotting):
-    plotting.plot_stacked_ancestry_grid(
-        layer_stats["ancestry_proportions"], figsize=(5*8, 5*8), n_cols=8, save=True
-    )
+def _(layer_stats):
+    layer_stats
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""Now, lets look how effectively each layer gets optimized for different selection/drift ratio (population_size/selection_fraction). To do this, we will fix the selection_fraction while varying the population size.""")
+@app.cell
+def _():
+    # plotting.plot_stacked_ancestry_grid(
+    #     layer_stats["ancestry_proportions"][:12],
+    #     figsize=(5 * 3, 5 * 6),
+    #     n_cols=2,
+    #     save=False,
+    # )
+    return
+
+
+@app.cell
+def _():
     return
 
 

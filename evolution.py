@@ -137,14 +137,14 @@ def parallel_run_evolution(n_runs, **kwargs):
 
     # Aggregate results
     aggregated_results = {}
-    for key in ["mean", "stdev", "ancestry_proportions"]:
+    for key in ["mean", "stdev", "ancestry_proportions", "fitness"]:
         values = np.array([result[key] for result in results])
         if key == "mean":
             aggregated_results[key] = np.mean(values, axis=0)
         elif key == "stdev":
             aggregated_results[key] = np.std(values, axis=0)
-        elif key == "ancestry_proportions":
-            aggregated_results[key] = values  # don't aggregate ancestry proportions
+        else:
+            aggregated_results[key] = values  # don't aggregate
     return aggregated_results
 
 
