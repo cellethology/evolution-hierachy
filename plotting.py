@@ -190,3 +190,54 @@ def plot_fitness_violin_by_layer(
         plt.savefig("output/fitness_violin_by_layer.pdf", format="pdf", dpi=300)
 
     plt.show()
+
+
+def plot_median_fitness_by_generation(fitness_by_layer, figsize=(10, 6), save=False):
+    """
+    Plot a line graph of the median of np.ptp(fitness_gen) across all simulations
+    for each layer over all generations.
+
+    Parameters
+    ----------
+    fitness_by_layer : dict
+        Dictionary where keys are number of layers (int), and values are fitness matrices
+        of shape (population_size, n_generations).
+    figsize : tuple
+        Size of the overall figure.
+    save : bool
+        Whether to save the plot.
+    """
+    layer_counts = sorted(fitness_by_layer.keys(), key=lambda x: int(x))
+    n_generations = next(iter(fitness_by_layer.values())).shape[2]
+
+    plt.figure(figsize=figsize)
+
+    for layer in layer_counts:
+        fitness_runs = fitness_by_layer[
+            layer
+        ]  # shape: (n_runs, population_size, n_generations)
+        fitness_runs = (
+            fitness_runs * fitness_runs.shape[1]
+        )  # Multiply by population size
+        medians = []
+
+        for gen in range(n_generations):
+            # Collect all peak-to-peak values for this generation
+            all_ptp = [np.ptp(run_fitness[:, gen]) for run_fitness in fitness_runs]
+            # Compute the median
+            medians.append(np.median(all_ptp))
+
+        # Plot the median line for this layer
+        plt.plot(range(n_generations), medians, label=f"Layer {layer}", linewidth=2)
+
+    # Add labels, legend, and clean up the plot
+    plt.xlabel("Generation", fontsize=14)
+    plt.ylabel("Median (max fitness - min fitness)", fontsize=14)
+    plt.legend(title="Layers", fontsize=12, title_fontsize=12)
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+
+    if save:
+        plt.savefig("output/median_fitness_by_generation.pdf", format="pdf", dpi=300)
+
+    plt.show()
