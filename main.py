@@ -6,16 +6,11 @@ app = marimo.App(width="columns", auto_download=["ipynb"])
 
 @app.cell
 def _():
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from tqdm import tqdm
-    from scipy.special import expit
-    import concurrent.futures
     import marimo as mo
 
     import evolution
     import plotting
-    return concurrent, evolution, expit, mo, np, plotting, plt, tqdm
+    return evolution, mo, plotting
 
 
 @app.cell
@@ -46,28 +41,30 @@ def _(layer_stats, plotting):
 def _(evolution):
     list_of_max_depth = [1, 3, 5, 7, 9, 11]
     fitness = {}
+    mean_optimality = {}
     for max_depth in list_of_max_depth:
         res = evolution.parallel_run_evolution(
-            24 * 6,
-            n_generations=70,
+            24 * 12,
+            n_generations=150,
             population_size=1000,
             mutation_std=0.1,
-            mutation_rate=1,
-            eval_fraction=1,
+            mutation_rate=0.1,
+            eval_fraction=0.1,
             max_depth=max_depth,
             dim=10,
             normalize=False,
             use_sigmoid=False,
         )
         fitness[str(max_depth)] = res["fitness"]
-    return fitness, list_of_max_depth, max_depth, res
+        mean_optimality[str(max_depth)] = res["mean"]
+    return fitness, list_of_max_depth, max_depth, mean_optimality, res
 
 
 @app.cell
-def _(fitness, plotting):
-    plotting.plot_fitness_violin_by_layer(
-        fitness, generations_to_plot=[0, 3, 5, 10], save=True
-    )
+def _():
+    # plotting.plot_fitness_violin_by_layer(
+    #     fitness, generations_to_plot=[0, 3, 5, 10], save=True
+    # )
     return
 
 
@@ -78,27 +75,8 @@ def _(fitness, plotting):
 
 
 @app.cell
-def _(evolution):
-    output_morenoise = evolution.parallel_run_evolution(
-        24,
-        n_generations=1000,
-        population_size=1000,
-        mutation_std=0.1,
-        mutation_rate=0.1,
-        eval_fraction=1,
-        max_depth=10,
-        dim=10,
-        normalize=False,
-        use_sigmoid=False,
-    )
-    return (output_morenoise,)
-
-
-@app.cell
-def _(output_morenoise, plotting):
-    plotting.plot_stacked_ancestry_grid(
-        ancestry_matrices=output_morenoise["ancestry_proportions"], figsize=(8, 15)
-    )
+def _(mean_optimality, plotting):
+    plotting.plot_optimality_by_layer_at_last_generation(mean_optimality)
     return
 
 

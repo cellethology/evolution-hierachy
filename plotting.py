@@ -67,6 +67,60 @@ def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=
     plt.show()
 
 
+def plot_optimality_by_layer_at_last_generation(
+    optimality_by_layer, figsize=(8, 6), save=False
+):
+    """
+    Plot a line graph where the x-axis is the number of layers, and the y-axis is the
+    optimality at the last generation for the top layer.
+
+    Parameters
+    ----------
+    optimality_by_layer : dict
+        Dictionary where keys are number of layers (int), and values are optimality matrices
+        of shape (n_runs, n_generations).
+    figsize : tuple
+        Size of the overall figure.
+    save : bool
+        Whether to save the plot.
+    """
+    layer_counts = sorted(optimality_by_layer.keys(), key=lambda x: int(x))
+    last_generation_optimality = []
+
+    for layer in layer_counts:
+        optimality_matrix = optimality_by_layer[
+            layer
+        ]  # shape: (n_layers, n_generations)
+        # Extract the last layer's value at the last generation
+        last_generation_optimality.append(optimality_matrix[-1, -1])
+
+    # Plot the results
+    plt.figure(figsize=figsize)
+    plt.plot(
+        layer_counts,
+        last_generation_optimality,
+        marker="o",
+        linestyle="-",
+        linewidth=2,
+        label="Last Generation Optimality",
+    )
+
+    # Add labels, legend, and clean up the plot
+    plt.xlabel("Number of Layers", fontsize=14)
+    plt.ylabel("Optimality (Last Generation)", fontsize=14)
+    plt.title("Optimality by Layer at Last Generation", fontsize=16)
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+
+    if save:
+        plt.savefig(
+            "output/optimality_by_layer_last_generation.pdf", format="pdf", dpi=300
+        )
+
+    plt.show()
+
+
 def plot_stacked_ancestry_grid(
     ancestry_matrices,
     n_cols=3,
