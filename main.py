@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.2"
+__generated_with = "0.12.7"
 app = marimo.App(width="columns", auto_download=["ipynb"])
 
 
@@ -17,14 +17,14 @@ def _():
 def _(evolution):
     # Evolution simulation
     layer_stats = evolution.parallel_run_evolution(
-        24 * 12,
-        n_generations=100,
-        population_size=500,
-        mutation_std=0.1,
-        mutation_rate=1,
-        eval_fraction=1,
-        max_depth=6,
-        dim=10,
+        10,
+        n_generations=1000,
+        population_size=1000,
+        mutation_std=0.0,
+        mutation_rate=0.1,
+        eval_fraction=0.,
+        max_depth=1,
+        dim=100,
         normalize=False,
         use_sigmoid=False,
     )
@@ -38,18 +38,26 @@ def _(layer_stats, plotting):
 
 
 @app.cell
+def _(layer_stats, plotting):
+    plotting.plot_stacked_ancestry_grid(
+        layer_stats["ancestry_proportions"][:18], figsize=(15, 20), save=True
+    )
+    return
+
+
+@app.cell
 def _(evolution):
-    list_of_max_depth = [1, 3, 5, 7, 9, 11]
+    list_of_max_depth = [1, 5, 9]
     fitness = {}
     mean_optimality = {}
     for max_depth in list_of_max_depth:
         res = evolution.parallel_run_evolution(
-            24 * 12,
-            n_generations=150,
+            64 * 10,
+            n_generations=500,
             population_size=1000,
-            mutation_std=0.1,
-            mutation_rate=0.1,
-            eval_fraction=0.1,
+            mutation_std=0.08,
+            mutation_rate=1,
+            eval_fraction=1,
             max_depth=max_depth,
             dim=10,
             normalize=False,
@@ -77,11 +85,6 @@ def _(fitness, plotting):
 @app.cell
 def _(mean_optimality, plotting):
     plotting.plot_optimality_by_layer_at_last_generation(mean_optimality)
-    return
-
-
-@app.cell
-def _():
     return
 
 

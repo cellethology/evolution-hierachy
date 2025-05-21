@@ -54,6 +54,7 @@ def run_evolution(
 
     # Initialize with random population
     population = uniform_sphere_gaussian(population_size, dim=system.dim)
+    print(population.shape)
 
     # Initialize ancestry
     ancestry = np.eye(population_size)
@@ -77,6 +78,9 @@ def run_evolution(
     # Compute optimal outputs at each layer
     optimal_outputs = system._backward_pass(optimal_direction.reshape(1, -1))
 
+    # Initialize population near optimal genotype
+    # population = np.tile(optimal_outputs[0][0], (population_size,1))
+
     for gen in range(n_generations):
         # Forward pass through all layers
         layer_outputs = system._forward_pass(population)
@@ -91,11 +95,13 @@ def run_evolution(
             layer_stats["ancestry_proportions"][:, gen] = np.mean(
                 ancestry, axis=0
             )  # Track ancestry proportions
+            
 
         # Selection
         cossim = compute_cosine_similarity_subset(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
+        
         fitness = cossim - cossim.min() + 1e-1  # shift to avoid negatives
         selection_probs = fitness / np.sum(fitness)
         layer_stats["fitness"][:, gen] = selection_probs  # Store fitness
