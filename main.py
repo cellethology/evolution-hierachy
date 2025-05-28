@@ -100,14 +100,16 @@ def _(df, plotting):
 
 @app.cell
 def _(fitness, plotting):
-    plotting.plot_median_fitness_by_generation(fitness, save=False)
-    return
+    layer_counts, generation_achieve_threshold = (
+        plotting.plot_median_fitness_by_generation(fitness, save=False)
+    )
+    return generation_achieve_threshold, layer_counts
 
 
 @app.cell
-def _(fitness, plotting):
-    plotting.plot_fitness_violin_by_layer(
-        fitness, generations_to_plot=[1, 3, 5, 7, 9, 11, 13, 15], save=True
+def _(generation_achieve_threshold, layer_counts, plotting):
+    plotting.plot_generation_to_optimality(
+        layer_counts, generation_achieve_threshold, save=True
     )
     return
 
