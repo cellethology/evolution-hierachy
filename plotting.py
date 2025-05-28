@@ -311,7 +311,7 @@ def plot_generation_to_optimality(layer_counts, generation_achieve_threshold, sa
         linestyle="-",
         linewidth=2,
     )
-    plt.xlabel("Max depth", fontsize=14)
+    plt.xlabel("Total number of layers", fontsize=14)
     plt.ylabel("Avg. generation \n to convergence", fontsize=14)
 
     # remove top and right spines, remove grid
