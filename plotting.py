@@ -303,7 +303,7 @@ def plot_median_fitness_by_generation(
 
 def plot_generation_to_optimality(layer_counts, generation_achieve_threshold, save=False):
     # plot the generation to achieves the threshold against the layer
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(5, 3))
     plt.plot(
         layer_counts,
         generation_achieve_threshold,
@@ -311,9 +311,13 @@ def plot_generation_to_optimality(layer_counts, generation_achieve_threshold, sa
         linestyle="-",
         linewidth=2,
     )
-    plt.xlabel("Number of layers", fontsize=14)
-    plt.ylabel("Average generation to optimality", fontsize=14)
-    plt.grid(alpha=0.3)
+    plt.xlabel("Max depth", fontsize=14)
+    plt.ylabel("Avg. generation \n to convergence", fontsize=14)
+
+    # remove top and right spines, remove grid
+    plt.gca().spines["top"].set_visible(False)
+    plt.gca().spines["right"].set_visible(False)
+    plt.grid(False)
     plt.tight_layout()
 
     if save:
