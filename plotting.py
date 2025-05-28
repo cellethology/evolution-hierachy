@@ -276,9 +276,9 @@ def plot_median_fitness_by_generation(fitness_by_layer, figsize=(10, 6), save=Fa
 
         for gen in range(n_generations):
             # Collect all peak-to-peak values for this generation
-            all_ptp = [np.ptp(run_fitness[:, gen]) for run_fitness in fitness_runs]
+            all_ptp = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
             # Compute the median
-            medians.append(np.median(all_ptp))
+            medians.append(np.mean(all_ptp))
 
         # Plot the median line for this layer
         plt.plot(range(n_generations), medians, label=f"Layer {layer}", linewidth=2)

@@ -14,6 +14,15 @@ def compute_cosine_similarity_subset(layer_outputs, optimal_output, dims):
         ]
     )
 
+def similarity_to_selection_probs(cosine_similarities, temperature=0.7, epsilon=1e-6):
+    # Shift similarities to [0, 1]
+    shifted = (np.array(cosine_similarities) + 1) / 2
+    # Ensure non-zero entries
+    adjusted = shifted + epsilon
+    # Compute softmax
+    scaled = adjusted / temperature
+    exp_scaled = np.exp(scaled - np.max(scaled))  # for numerical stability
+    return exp_scaled / np.sum(exp_scaled)
 
 def mutate_population_subset(population, mutation_std, mutation_rate):
     """Mutate a subset of components in the population vectors (fast, probabilistic version)."""
@@ -101,9 +110,7 @@ def run_evolution(
         cossim = compute_cosine_similarity_subset(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
-        
-        fitness = cossim - cossim.min() + 1e-1  # shift to avoid negatives
-        selection_probs = fitness / np.sum(fitness)
+        selection_probs = similarity_to_selection_probs(cossim)
         layer_stats["fitness"][:, gen] = selection_probs  # Store fitness
         parent_indices = np.random.choice(
             population_size, size=population_size, p=selection_probs
