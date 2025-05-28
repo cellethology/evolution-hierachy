@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.cm import get_cmap
 
+
 def plot_layer_evolution(layer_stats, layers_to_plot=None, figsize=(8, 6), save=False):
     """
     Plot evolution of statistics across generations for multiple layers.
@@ -245,7 +246,9 @@ def plot_fitness_violin_by_layer(
     plt.show()
 
 
-def plot_median_fitness_by_generation(fitness_by_layer, figsize=(10, 6), save=False):
+def plot_median_fitness_by_generation(
+    fitness_by_layer, figsize=(10, 6), threshold=0.9, save=False
+):
     """
     Plot a line graph of the median of np.ptp(fitness_gen) across all simulations
     for each layer over all generations.
@@ -262,43 +265,61 @@ def plot_median_fitness_by_generation(fitness_by_layer, figsize=(10, 6), save=Fa
     """
     layer_counts = sorted(fitness_by_layer.keys(), key=lambda x: int(x))
     n_generations = next(iter(fitness_by_layer.values())).shape[2]
+    generation_achieve_threshold = [0] * len(layer_counts)
 
     plt.figure(figsize=figsize)
 
-    for layer in layer_counts:
+    for idx, layer in enumerate(layer_counts):
         fitness_runs = fitness_by_layer[
             layer
         ]  # shape: (n_runs, population_size, n_generations)
         fitness_runs = (
             fitness_runs * fitness_runs.shape[1]
         )  # Multiply by population size
-        medians = []
+        means = []
 
         for gen in range(n_generations):
             # Collect all peak-to-peak values for this generation
-            all_ptp = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
+            all_min = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
             # Compute the median
-            medians.append(np.mean(all_ptp))
+            means.append(np.mean(all_min))
 
         # Plot the median line for this layer
-        plt.plot(range(n_generations), medians, label=f"Layer {layer}", linewidth=2)
+        plt.plot(range(n_generations), means, label=f"Layer {layer}", linewidth=2)
+        generation_achieve_threshold[idx] = np.where(np.array(means) >= threshold)[0][0]
 
     # Add labels, legend, and clean up the plot
     plt.xlabel("Generation", fontsize=14)
-    plt.ylabel("Median (max fitness - min fitness)", fontsize=14)
+    plt.ylabel("Mean (min fitness)", fontsize=14)
     plt.legend(title="Layers", fontsize=12, title_fontsize=12)
     plt.grid(alpha=0.3)
     plt.tight_layout()
 
     if save:
-        plt.savefig("output/median_fitness_by_generation.pdf", format="pdf", dpi=300)
+        plt.savefig("output/mean_fitness_by_generation.pdf", format="pdf", dpi=300)
+
+    # plot the generation to achieves the threshold against the layer
+    plt.figure(figsize=(10, 6))
+    plt.plot(
+        layer_counts,
+        generation_achieve_threshold,
+        marker="o",
+        linestyle="-",
+        linewidth=2,
+    )
+    plt.xlabel("Layer", fontsize=14)
+    plt.ylabel("Generation to achieve threshold", fontsize=14)
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.show()
 
     plt.show()
+
 
 def plot_half_max_heatmap(df, figsize=(10, 8), save=False):
     """
     Create a heatmap visualization of the DataFrame showing first indices to reach half maximum fitness.
-    
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -310,47 +331,56 @@ def plot_half_max_heatmap(df, figsize=(10, 8), save=False):
     """
     # Convert DataFrame values to numeric type
     df_numeric = df.astype(float)
-    
+
     fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Create heatmap using imshow
-    im = ax.imshow(df_numeric.values, cmap='YlOrRd')
-    
+    im = ax.imshow(df_numeric.values, cmap="YlOrRd")
+
     # Add colorbar
     cbar = plt.colorbar(im, ax=ax)
-    cbar.set_label('Generation')
-    
+    cbar.set_label("Generation")
+
     # Set ticks and labels
     ax.set_xticks(np.arange(len(df.columns)))
     ax.set_yticks(np.arange(len(df.index)))
     ax.set_xticklabels(df.columns)
     ax.set_yticklabels(df.index)
-    
+
     # Rotate x-axis labels
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-    
+
     # Add labels
-    ax.set_xlabel('Population Size')
-    ax.set_ylabel('Max Depth')
-    
+    ax.set_xlabel("Population Size")
+    ax.set_ylabel("Max Depth")
+
     # Add text annotations
     for i in range(len(df.index)):
         for j in range(len(df.columns)):
-            ax.text(j, i, f'{int(df_numeric.iloc[i, j])}',
-                   ha="center", va="center", color="black")
-    
+            ax.text(
+                j,
+                i,
+                f"{int(df_numeric.iloc[i, j])}",
+                ha="center",
+                va="center",
+                color="black",
+            )
+
     # Adjust layout
     plt.tight_layout()
-    
+
     if save:
-        plt.savefig('output/half_max_heatmap.pdf', format='pdf', dpi=300, bbox_inches='tight')
-    
+        plt.savefig(
+            "output/half_max_heatmap.pdf", format="pdf", dpi=300, bbox_inches="tight"
+        )
+
     plt.show()
+
 
 def plot_fitness_grid(fitness_dict, figsize=(15, 5), save=False):
     """
     Create a grid of line plots showing fitness evolution for different population sizes at each max_depth.
-    
+
     Parameters
     ----------
     fitness_dict : dict
@@ -363,45 +393,47 @@ def plot_fitness_grid(fitness_dict, figsize=(15, 5), save=False):
     """
     n_max_depths = len(fitness_dict)
     fig, axes = plt.subplots(1, n_max_depths, figsize=figsize, sharey=True)
-    
+
     # If only one max_depth, axes won't be an array
     if n_max_depths == 1:
         axes = [axes]
-    
+
     # Get all population sizes (should be same for all max_depths)
     population_sizes = list(next(iter(fitness_dict.values())).keys())
-    
+
     # Create a plot for each max_depth
     for ax, (max_depth, pop_dict) in zip(axes, fitness_dict.items()):
         # Plot a line for each population size
         for pop_size in population_sizes:
             fitness_array = pop_dict[pop_size][-1]  # Get the fitness array
             generations = np.arange(len(fitness_array))
-            ax.plot(generations, fitness_array, label=f'Pop Size {pop_size}')
-        
+            ax.plot(generations, fitness_array, label=f"Pop Size {pop_size}")
+
         # Customize the subplot
-        ax.set_title(f'Max Depth = {max_depth}', fontsize=16)
-        ax.set_xlabel('Generation', fontsize=16)
+        ax.set_title(f"Max Depth = {max_depth}", fontsize=16)
+        ax.set_xlabel("Generation", fontsize=16)
         if ax == axes[0]:  # Only for the first subplot
-            ax.set_ylabel('Fitness', fontsize=16)
+            ax.set_ylabel("Fitness", fontsize=16)
         ax.grid(True, alpha=0.3)
-        
+
         # Add legend
-        ax.legend(loc='center right', bbox_to_anchor=(0.98, 0.5), fontsize=8)
-    
+        ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.5), fontsize=8)
+
     # Adjust layout to prevent label cutoff
     plt.tight_layout()
-    
+
     if save:
-        plt.savefig('output/fitness_grid.pdf', format='pdf', dpi=300, bbox_inches='tight')
-    
+        plt.savefig(
+            "output/fitness_grid.pdf", format="pdf", dpi=300, bbox_inches="tight"
+        )
+
     plt.show()
 
 
 def plot_fitness_grid_by_population(fitness_dict, figsize=(15, 5), save=False):
     """
     Create a grid of line plots showing fitness evolution for different max depths at each population size.
-    
+
     Parameters
     ----------
     fitness_dict : dict
@@ -415,35 +447,40 @@ def plot_fitness_grid_by_population(fitness_dict, figsize=(15, 5), save=False):
     # Get all population sizes (should be same for all max_depths)
     population_sizes = list(next(iter(fitness_dict.values())).keys())
     n_pop_sizes = len(population_sizes)
-    
+
     fig, axes = plt.subplots(1, n_pop_sizes, figsize=figsize, sharey=True)
-    
+
     # If only one population size, axes won't be an array
     if n_pop_sizes == 1:
         axes = [axes]
-    
+
     # Create a plot for each population size
     for ax, pop_size in zip(axes, population_sizes):
         # Plot a line for each max_depth
         for max_depth, pop_dict in fitness_dict.items():
             fitness_array = pop_dict[pop_size][-1]  # Get the fitness array
             generations = np.arange(len(fitness_array))
-            ax.plot(generations, fitness_array, label=f'Depth {max_depth}')
-        
+            ax.plot(generations, fitness_array, label=f"Depth {max_depth}")
+
         # Customize the subplot
-        ax.set_title(f'Population Size = {pop_size}')
-        ax.set_xlabel('Generation')
+        ax.set_title(f"Population Size = {pop_size}")
+        ax.set_xlabel("Generation")
         if ax == axes[0]:  # Only for the first subplot
-            ax.set_ylabel('Fitness')
+            ax.set_ylabel("Fitness")
         ax.grid(True, alpha=0.3)
-        
+
         # Add legend into the line plot
-        ax.legend(loc='center right', bbox_to_anchor=(0.98, 0.5))
-    
+        ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.5))
+
     # Adjust layout to prevent label cutoff
     plt.tight_layout()
-    
+
     if save:
-        plt.savefig('output/fitness_grid_by_population.pdf', format='pdf', dpi=300, bbox_inches='tight')
-    
+        plt.savefig(
+            "output/fitness_grid_by_population.pdf",
+            format="pdf",
+            dpi=300,
+            bbox_inches="tight",
+        )
+
     plt.show()

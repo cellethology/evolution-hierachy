@@ -110,10 +110,10 @@ if __name__ == "__main__":
     q3s_redundant = [q3s_redundant[i] for i in plot_indices]
 
     # Set clean plotting style
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(5, 4))
 
     # Plot linear case
-    ax.plot(depths, medians_linear, label="Linear network", linewidth=2)
+    ax.plot(depths, medians_linear, label="Linear", linewidth=2)
     ax.fill_between(depths, q1s_linear, q3s_linear, alpha=0.2)
 
     # Plot nonlinear case
@@ -130,14 +130,14 @@ if __name__ == "__main__":
     ax.grid(False)
 
     # Set labels and title
-    ax.set_xlabel("Layer Depth", fontsize=12)
-    ax.set_ylabel("Sensitivity to random input perturbation", fontsize=12)
+    ax.set_xlabel("Layer Depth", fontsize=15)
+    ax.set_ylabel("Sensitivity to perturbation", fontsize=15)
 
     # Add legend with clean style
-    ax.legend(frameon=False)
-    ax.tick_params(axis="both", which="major", labelsize=11)
+    ax.legend(frameon=False, fontsize=12)
+    ax.tick_params(axis="both", which="major", labelsize=12)
 
     # Adjust layout
     plt.tight_layout()
-    plt.savefig("sensitivity_to_random_input_perturbation.pdf", format="pdf", dpi=300)
+    plt.savefig("output/sensitivity_to_random_input_perturbation.pdf", format="pdf", dpi=300)
     plt.show()
