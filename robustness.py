@@ -90,39 +90,39 @@ if __name__ == "__main__":
     medians_linear, q1s_linear, q3s_linear = measure_directional_robustness(
         max_depth, n_models=25, use_sigmoid=False, rank_fraction=1.0
     )
-    medians_nonlinear, q1s_nonlinear, q3s_nonlinear = measure_directional_robustness(
-        max_depth, n_models=25, use_sigmoid=True, rank_fraction=1.0
-    )
-    medians_redundant, q1s_redundant, q3s_redundant = measure_directional_robustness(
-        max_depth, n_models=25, use_sigmoid=False, rank_fraction=0.35
-    )  # Reduced rank
+    # medians_nonlinear, q1s_nonlinear, q3s_nonlinear = measure_directional_robustness(
+    #     max_depth, n_models=25, use_sigmoid=True, rank_fraction=1.0
+    # )
+    # medians_redundant, q1s_redundant, q3s_redundant = measure_directional_robustness(
+    #     max_depth, n_models=25, use_sigmoid=False, rank_fraction=0.35
+    # )  # Reduced rank
 
     # Select plotting depths
     plot_indices = [i - 1 for i in depths]
     medians_linear = [medians_linear[i] for i in plot_indices]
     q1s_linear = [q1s_linear[i] for i in plot_indices]
     q3s_linear = [q3s_linear[i] for i in plot_indices]
-    medians_nonlinear = [medians_nonlinear[i] for i in plot_indices]
-    q1s_nonlinear = [q1s_nonlinear[i] for i in plot_indices]
-    q3s_nonlinear = [q3s_nonlinear[i] for i in plot_indices]
-    medians_redundant = [medians_redundant[i] for i in plot_indices]
-    q1s_redundant = [q1s_redundant[i] for i in plot_indices]
-    q3s_redundant = [q3s_redundant[i] for i in plot_indices]
+    # medians_nonlinear = [medians_nonlinear[i] for i in plot_indices]
+    # q1s_nonlinear = [q1s_nonlinear[i] for i in plot_indices]
+    # q3s_nonlinear = [q3s_nonlinear[i] for i in plot_indices]
+    # medians_redundant = [medians_redundant[i] for i in plot_indices]
+    # q1s_redundant = [q1s_redundant[i] for i in plot_indices]
+    # q3s_redundant = [q3s_redundant[i] for i in plot_indices]
 
     # Set clean plotting style
-    fig, ax = plt.subplots(figsize=(5, 4))
+    fig, ax = plt.subplots(figsize=(5, 3))
 
     # Plot linear case
     ax.plot(depths, medians_linear, label="Linear", linewidth=2)
     ax.fill_between(depths, q1s_linear, q3s_linear, alpha=0.2)
 
-    # Plot nonlinear case
-    ax.plot(depths, medians_nonlinear, label="Linear + sigmoid", linewidth=2)
-    ax.fill_between(depths, q1s_nonlinear, q3s_nonlinear, alpha=0.2)
+    # # Plot nonlinear case
+    # ax.plot(depths, medians_nonlinear, label="Linear + sigmoid", linewidth=2)
+    # ax.fill_between(depths, q1s_nonlinear, q3s_nonlinear, alpha=0.2)
 
-    # Plot redundant case
-    ax.plot(depths, medians_redundant, label="Linear + reduced rank", linewidth=2)
-    ax.fill_between(depths, q1s_redundant, q3s_redundant, alpha=0.2)
+    # # Plot redundant case
+    # ax.plot(depths, medians_redundant, label="Linear + reduced rank", linewidth=2)
+    # ax.fill_between(depths, q1s_redundant, q3s_redundant, alpha=0.2)
 
     # Clean up the plot
     ax.spines["top"].set_visible(False)
@@ -131,13 +131,15 @@ if __name__ == "__main__":
 
     # Set labels and title
     ax.set_xlabel("Layer Depth", fontsize=15)
-    ax.set_ylabel("Sensitivity to perturbation", fontsize=15)
+    ax.set_ylabel("Sensitivity to \n random perturbation", fontsize=15)
 
     # Add legend with clean style
-    ax.legend(frameon=False, fontsize=12)
+    # ax.legend(frameon=False, fontsize=12)
     ax.tick_params(axis="both", which="major", labelsize=12)
 
     # Adjust layout
     plt.tight_layout()
-    plt.savefig("output/sensitivity_to_random_input_perturbation.pdf", format="pdf", dpi=300)
+    plt.savefig(
+        "output/sensitivity_to_random_input_perturbation.pdf", format="pdf", dpi=300
+    )
     plt.show()
