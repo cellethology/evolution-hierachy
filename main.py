@@ -1,7 +1,7 @@
 import marimo
 
-__generated_with = "0.12.7"
-app = marimo.App(width="columns", auto_download=["ipynb"])
+__generated_with = "0.13.6"
+app = marimo.App(width="columns")
 
 
 @app.cell
@@ -11,7 +11,7 @@ def _():
     import evolution
     import plotting
     import helper
-    return evolution, helper, mo, plotting
+    return evolution, helper, plotting
 
 
 @app.cell
@@ -48,7 +48,7 @@ def _(layer_stats, plotting):
 
 @app.cell
 def _(evolution):
-    list_of_max_depth = [1, 3, 5, 7, 9, 11, 13, 15]
+    list_of_max_depth = [1, 5, 10, 15]
 
     fitness = {}
     mean_optimality = {}
@@ -70,13 +70,16 @@ def _(evolution):
         )
         fitness[str(max_depth)] = res["fitness"]
         mean_optimality[str(max_depth)] = res["mean"]
-    return fitness, list_of_max_depth, max_depth, mean_optimality, res
+    return fitness, mean_optimality
 
 
 @app.cell
 def _(fitness, plotting):
-    layer_counts, generation_achieve_threshold = (
-        plotting.plot_median_fitness_by_generation(fitness, save=True)
+    (
+        layer_counts,
+        generation_achieve_threshold,
+    ) = plotting.plot_median_fitness_by_generation(
+        fitness, save=True, figsize=(5, 3)
     )
     return generation_achieve_threshold, layer_counts
 
