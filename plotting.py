@@ -270,29 +270,38 @@ def plot_median_fitness_by_generation(
     plt.figure(figsize=figsize)
 
     for idx, layer in enumerate(layer_counts):
-        fitness_runs = fitness_by_layer[
-            layer
-        ]  # shape: (n_runs, population_size, n_generations)
-        fitness_runs = (
-            fitness_runs * fitness_runs.shape[1]
-        )  # Multiply by population size
+        fitness_runs = fitness_by_layer[layer]  # shape: (n_runs, population_size, n_generations)
+        fitness_runs = fitness_runs * fitness_runs.shape[1]  # Multiply by population size
         means = []
 
         for gen in range(n_generations):
-            # Collect all peak-to-peak values for this generation
             all_min = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
-            # Compute the median
             means.append(np.mean(all_min))
 
-        # Plot the median line for this layer
         plt.plot(range(n_generations), means, label=f"Layer {layer}", linewidth=2)
-        generation_achieve_threshold[idx] = np.where(np.array(means) >= threshold)[0][0]
 
-    # Add labels, legend, and clean up the plot
-    plt.xlabel("Generation", fontsize=14)
-    plt.ylabel("Mean (min fitness)", fontsize=14)
-    plt.legend(title="Layers", fontsize=12, title_fontsize=12)
-    plt.grid(alpha=0.3)
+        try:
+            generation_achieve_threshold[idx] = np.where(np.array(means) >= threshold)[0][0]
+        except IndexError:
+            generation_achieve_threshold[idx] = -1  # or handle as appropriate
+
+    # Axis settings
+    plt.xlabel("Generation", fontsize=16)
+    plt.ylabel("Mean (min fitness)", fontsize=16)
+    plt.yscale("log")
+
+    # Legend settings
+    plt.legend(title="Layers", fontsize=13, title_fontsize=14)
+
+    # Remove grid and top/right spines
+    ax = plt.gca()
+    ax.grid(False)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    # Ticks font size
+    ax.tick_params(axis='both', which='major', labelsize=13)
+
     plt.tight_layout()
 
     if save:

@@ -74,14 +74,18 @@ def _(evolution):
 
 
 @app.cell
-def _(mean_optimality, plotting):
-    plotting.plot_fitness_grid(fitness_dict=mean_optimality, figsize=(10, 5))
-    return
+def _(fitness, plotting):
+    layer_counts, generation_achieve_threshold = (
+        plotting.plot_median_fitness_by_generation(fitness, save=True)
+    )
+    return generation_achieve_threshold, layer_counts
 
 
 @app.cell
-def _(mean_optimality, plotting):
-    plotting.plot_fitness_grid_by_population(mean_optimality, figsize=(10, 5))
+def _(generation_achieve_threshold, layer_counts, plotting):
+    plotting.plot_generation_to_optimality(
+        layer_counts, generation_achieve_threshold, save=True
+    )
     return
 
 
@@ -95,22 +99,6 @@ def _(helper, mean_optimality):
 @app.cell
 def _(df, plotting):
     plotting.plot_half_max_heatmap(df)
-    return
-
-
-@app.cell
-def _(fitness, plotting):
-    layer_counts, generation_achieve_threshold = (
-        plotting.plot_median_fitness_by_generation(fitness, save=False)
-    )
-    return generation_achieve_threshold, layer_counts
-
-
-@app.cell
-def _(generation_achieve_threshold, layer_counts, plotting):
-    plotting.plot_generation_to_optimality(
-        layer_counts, generation_achieve_threshold, save=True
-    )
     return
 
 
