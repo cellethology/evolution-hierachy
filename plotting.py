@@ -270,28 +270,33 @@ def plot_median_fitness_by_generation(
     plt.figure(figsize=figsize)
 
     for idx, layer in enumerate(layer_counts):
-        fitness_runs = fitness_by_layer[layer]  # shape: (n_runs, population_size, n_generations)
-        fitness_runs = fitness_runs * fitness_runs.shape[1]  # Multiply by population size
+        fitness_runs = fitness_by_layer[
+            layer
+        ]  # shape: (n_runs, population_size, n_generations)
+        fitness_runs = (
+            fitness_runs * fitness_runs.shape[1]
+        )  # Multiply by population size
         means = []
 
         for gen in range(n_generations):
             all_min = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
             means.append(np.mean(all_min))
 
-        plt.plot(range(n_generations), means, label=f"Layer {layer}", linewidth=2)
+        plt.plot(range(n_generations), means, label=f"{layer} layers", linewidth=2)
 
         try:
-            generation_achieve_threshold[idx] = np.where(np.array(means) >= threshold)[0][0]
+            generation_achieve_threshold[idx] = np.where(np.array(means) >= threshold)[
+                0
+            ][0]
         except IndexError:
             generation_achieve_threshold[idx] = -1  # or handle as appropriate
 
     # Axis settings
     plt.xlabel("Generations", fontsize=16)
     plt.ylabel("Mean (min fitness)", fontsize=16)
-    plt.yscale("log")
 
     # Legend settings
-    plt.legend(title="Layers", fontsize=13, title_fontsize=14)
+    plt.legend(fontsize=11)
 
     # Remove grid and top/right spines
     ax = plt.gca()
@@ -300,7 +305,13 @@ def plot_median_fitness_by_generation(
     ax.spines["right"].set_visible(False)
 
     # Ticks font size
-    ax.tick_params(axis='both', which='major', labelsize=13)
+    ax.tick_params(axis="both", which="major", labelsize=13)
+
+    # plot horizontal line at y=0.9
+    plt.axhline(y=0.9, color="black", linestyle="--", linewidth=1)
+
+    ax.set_ylim((0.88, 0.91))
+    ax.set_xlim((12, 80))
 
     plt.tight_layout()
 
@@ -310,7 +321,10 @@ def plot_median_fitness_by_generation(
     plt.show()
     return layer_counts, generation_achieve_threshold
 
-def plot_generation_to_optimality(layer_counts, generation_achieve_threshold, save=False):
+
+def plot_generation_to_optimality(
+    layer_counts, generation_achieve_threshold, save=False
+):
     # plot the generation to achieves the threshold against the layer
     plt.figure(figsize=(5, 3))
     plt.plot(
@@ -330,8 +344,8 @@ def plot_generation_to_optimality(layer_counts, generation_achieve_threshold, sa
     plt.tight_layout()
 
     if save:
-      plt.savefig("output/generation_to_optimality.pdf", format="pdf", dpi=300)
-          
+        plt.savefig("output/generation_to_optimality.pdf", format="pdf", dpi=300)
+
     plt.show()
 
 

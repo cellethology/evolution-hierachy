@@ -1,7 +1,7 @@
 import marimo
 
-__generated_with = "0.12.7"
-app = marimo.App(width="columns", auto_download=["ipynb"])
+__generated_with = "0.13.6"
+app = marimo.App(width="columns")
 
 
 @app.cell
@@ -11,7 +11,7 @@ def _():
     import evolution
     import plotting
     import helper
-    return evolution, helper, mo, plotting
+    return evolution, helper, plotting
 
 
 @app.cell
@@ -48,6 +48,7 @@ def _(layer_stats, plotting):
 
 @app.cell
 def _(evolution):
+    list_of_max_depth = [1, 5, 10, 15]
     list_of_max_depth = [1, 5, 10, 15]
 
     fitness = {}

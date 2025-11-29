@@ -14,6 +14,7 @@ def compute_cosine_similarity_subset(layer_outputs, optimal_output, dims):
         ]
     )
 
+
 def similarity_to_selection_probs(cosine_similarities, temperature=0.7, epsilon=1e-6):
     # Shift similarities to [0, 1]
     shifted = (np.array(cosine_similarities) + 1) / 2
@@ -23,6 +24,7 @@ def similarity_to_selection_probs(cosine_similarities, temperature=0.7, epsilon=
     scaled = adjusted / temperature
     exp_scaled = np.exp(scaled - np.max(scaled))  # for numerical stability
     return exp_scaled / np.sum(exp_scaled)
+
 
 def mutate_population_subset(population, mutation_std, mutation_rate):
     """Mutate a subset of components in the population vectors (fast, probabilistic version)."""
@@ -63,7 +65,6 @@ def run_evolution(
 
     # Initialize with random population
     population = uniform_sphere_gaussian(population_size, dim=system.dim)
-    print(population.shape)
 
     # Initialize ancestry
     ancestry = np.eye(population_size)
@@ -105,7 +106,6 @@ def run_evolution(
             layer_stats["ancestry_proportions"][:, gen] = np.mean(
                 ancestry, axis=0
             )  # Track ancestry proportions
-            
 
         # Selection
         cossim = compute_cosine_similarity_subset(
