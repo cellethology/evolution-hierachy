@@ -308,10 +308,10 @@ def plot_median_fitness_by_generation(
     ax.tick_params(axis="both", which="major", labelsize=13)
 
     # plot horizontal line at y=0.9
-    plt.axhline(y=0.9, color="black", linestyle="--", linewidth=1)
+    # plt.axhline(y=0.9, color="black", linestyle="--", linewidth=1)
 
-    ax.set_ylim((0.88, 0.91))
-    ax.set_xlim((12, 80))
+    # ax.set_ylim((0.88, 0.91))
+    # ax.set_xlim((12, 80))
 
     plt.tight_layout()
 
