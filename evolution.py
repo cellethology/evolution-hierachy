@@ -63,6 +63,7 @@ def run_evolution(
     normalize=False,
     seed=None,
     nonlinear_fitness=False,
+    omega=1.0,
 ):
     """Run evolutionary simulation"""
     if seed is not None:
@@ -124,7 +125,7 @@ def run_evolution(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
         fitness = similarity_to_selection_probs(
-            cossim, nonlinear_fitness=nonlinear_fitness
+            cossim, nonlinear_fitness=nonlinear_fitness, omega=omega
         )
         layer_stats["fitness"][:, gen] = fitness  # Store fitness
 
@@ -196,5 +197,7 @@ if __name__ == "__main__":
         dim=10,
         normalize=False,
         use_sigmoid=False,
+        nonlinear_fitness=True,
+        omega=1.0,
     )
     plotting.plot_layer_evolution(layer_stats, save=False)
