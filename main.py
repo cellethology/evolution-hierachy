@@ -18,16 +18,16 @@ def _():
 def _(evolution):
     # Evolution simulation
     layer_stats = evolution.parallel_run_evolution(
-        32 * 4,
-        n_generations=200,
-        population_size=100,
+        32 * 8,
+        n_generations=500,
+        population_size=200,
         mutation_std=0.1,
         mutation_rate=0.2,
         eval_fraction=0.2,
-        max_depth=1,
+        max_depth=2,
         dim=10,
         normalize=False,
-        use_sigmoid=False,
+        use_sigmoid=True,
     )
     return (layer_stats,)
 
@@ -48,10 +48,11 @@ def _(layer_stats, plotting):
 
 @app.cell
 def _(evolution):
-    list_of_max_depth = [1, 3, 5, 7, 9, 11, 13, 15]
+    list_of_max_depth = [1, 5, 10, 15]
 
     fitness = {}
     mean_optimality = {}
+    mock_fitness = {}
 
     for max_depth in list_of_max_depth:
         fitness[str(max_depth)] = {}
@@ -70,13 +71,27 @@ def _(evolution):
         )
         fitness[str(max_depth)] = res["fitness"]
         mean_optimality[str(max_depth)] = res["mean"]
-    return fitness, list_of_max_depth, max_depth, mean_optimality, res
+        mock_fitness[str(max_depth)] = res["mock_fitness"]
+    return (
+        fitness,
+        list_of_max_depth,
+        max_depth,
+        mean_optimality,
+        mock_fitness,
+        res,
+    )
 
 
 @app.cell
-def _(fitness, plotting):
+def _(mean_optimality):
+    mean_optimality["5"].shape
+    return
+
+
+@app.cell
+def _(mock_fitness, plotting):
     layer_counts, generation_achieve_threshold = (
-        plotting.plot_median_fitness_by_generation(fitness, save=True)
+        plotting.plot_median_fitness_by_generation(mock_fitness, save=True)
     )
     return generation_achieve_threshold, layer_counts
 

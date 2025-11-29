@@ -286,7 +286,7 @@ def plot_median_fitness_by_generation(
             generation_achieve_threshold[idx] = -1  # or handle as appropriate
 
     # Axis settings
-    plt.xlabel("Generation", fontsize=16)
+    plt.xlabel("Generations", fontsize=16)
     plt.ylabel("Mean (min fitness)", fontsize=16)
     plt.yscale("log")
 

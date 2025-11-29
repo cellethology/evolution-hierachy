@@ -1,7 +1,7 @@
-import numpy as np
-from tqdm import tqdm
-from layered_system import LayeredSystem, uniform_sphere_gaussian
 import matplotlib.pyplot as plt
+import numpy as np
+from layered_system import LayeredSystem, uniform_sphere_gaussian
+from tqdm import tqdm
 
 
 def measure_directional_robustness(
@@ -139,5 +139,7 @@ if __name__ == "__main__":
 
     # Adjust layout
     plt.tight_layout()
-    plt.savefig("output/sensitivity_to_random_input_perturbation.pdf", format="pdf", dpi=300)
+    plt.savefig(
+        "output/sensitivity_to_random_input_perturbation.pdf", format="pdf", dpi=300
+    )
     plt.show()

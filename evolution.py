@@ -1,6 +1,6 @@
-import numpy as np
-
 import concurrent.futures
+
+import numpy as np
 from layered_system import LayeredSystem, uniform_sphere_gaussian
 
 
@@ -82,6 +82,7 @@ def run_evolution(
         "stdev": np.zeros((system.max_depth + 1, n_generations)),
         "ancestry_proportions": np.zeros((population_size, n_generations)),
         "fitness": np.zeros((population_size, n_generations)),
+        "mock_fitness": np.zeros((population_size, n_generations)),
     }
 
     # Compute optimal outputs at each layer
@@ -112,6 +113,15 @@ def run_evolution(
         )
         selection_probs = similarity_to_selection_probs(cossim)
         layer_stats["fitness"][:, gen] = selection_probs  # Store fitness
+
+        # Store mock_fitness
+        layer_to_mock = 1 if max_depth == 1 else 4
+        mock_cossim = compute_cosine_similarity_subset(
+            layer_outputs[layer_to_mock], optimal_outputs[layer_to_mock][0], eval_dims
+        )
+        mock_selection_probs = similarity_to_selection_probs(mock_cossim)
+        layer_stats["mock_fitness"][:, gen] = mock_selection_probs  # Store fitness
+      
         parent_indices = np.random.choice(
             population_size, size=population_size, p=selection_probs
         )
@@ -150,7 +160,7 @@ def parallel_run_evolution(n_runs, **kwargs):
 
     # Aggregate results
     aggregated_results = {}
-    for key in ["mean", "stdev", "ancestry_proportions", "fitness"]:
+    for key in ["mean", "stdev", "ancestry_proportions", "fitness", "mock_fitness"]:
         values = np.array([result[key] for result in results])
         if key == "mean":
             aggregated_results[key] = np.mean(values, axis=0)
