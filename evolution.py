@@ -16,15 +16,26 @@ def compute_cosine_similarity_subset(layer_outputs, optimal_output, dims):
     )
 
 
-def similarity_to_selection_probs(cosine_similarities, temperature=0.7, epsilon=1e-6):
+def similarity_to_selection_probs(
+    cosine_similarities,
+    nonlinear_fitness=False,
+    temperature=0.7,
+    epsilon=1e-6,
+    omega=1.0,
+):
     # Shift similarities to [0, 1]
     shifted = (np.array(cosine_similarities) + 1) / 2
     # Ensure non-zero entries
     adjusted = shifted + epsilon
+    # Nonlinear fitness function
+    if nonlinear_fitness:
+        # Cosine modulation with max at x=1, never negative
+        mod = (np.cos(omega * (1 - adjusted)) + 1) / 2  # ∈ [0,1], =1 at x≈1
+        adjusted *= mod
     # Compute softmax
-    scaled = adjusted / temperature
-    exp_scaled = np.exp(scaled - np.max(scaled))  # for numerical stability
-    return exp_scaled / np.sum(exp_scaled)
+    # scaled = adjusted / temperature
+    # adjusted = np.exp(scaled - np.max(scaled))  # for numerical stability
+    return adjusted
 
 
 def mutate_population_subset(population, mutation_std, mutation_rate):
@@ -51,6 +62,7 @@ def run_evolution(
     max_depth=20,
     normalize=False,
     seed=None,
+    nonlinear_fitness=False,
 ):
     """Run evolutionary simulation"""
     if seed is not None:
@@ -111,11 +123,13 @@ def run_evolution(
         cossim = compute_cosine_similarity_subset(
             layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
-        selection_probs = similarity_to_selection_probs(cossim)
-        layer_stats["fitness"][:, gen] = selection_probs  # Store fitness
+        fitness = similarity_to_selection_probs(
+            cossim, nonlinear_fitness=nonlinear_fitness
+        )
+        layer_stats["fitness"][:, gen] = fitness  # Store fitness
 
         parent_indices = np.random.choice(
-            population_size, size=population_size, p=selection_probs
+            population_size, size=population_size, p=fitness / np.sum(fitness)
         )
         offspring = population[parent_indices]
         ancestry = ancestry[parent_indices]
