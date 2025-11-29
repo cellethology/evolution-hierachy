@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from layered_system import LayeredSystem, uniform_sphere_gaussian
 from tqdm import tqdm
+
+from layered_system import LayeredSystem, uniform_sphere_gaussian
 
 
 def measure_directional_robustness(

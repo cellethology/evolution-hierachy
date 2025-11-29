@@ -163,7 +163,7 @@ def plot_stacked_ancestry_grid(
                 colors[j] = (0.7, 0.7, 0.7, 0.3)  # gray-ish, semi-transparent
 
         ax.stackplot(generations, sorted_ancestry, colors=colors, alpha=0.95)
-        ax.set_title(titles[i] if titles and i < len(titles) else f"Run {i+1}")
+        ax.set_title(titles[i] if titles and i < len(titles) else f"Run {i + 1}")
         ax.set_xlabel("generation")
         ax.set_ylabel("proportion")
 
