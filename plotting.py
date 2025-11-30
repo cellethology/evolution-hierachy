@@ -291,7 +291,7 @@ def plot_median_fitness_by_generation(
     plt.ylabel("Median fitness", fontsize=16)
 
     # Legend settings
-    plt.legend(fontsize=11)
+    plt.legend(fontsize=11, frameon=False)
 
     # Remove grid and top/right spines
     ax = plt.gca()
