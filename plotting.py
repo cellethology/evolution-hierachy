@@ -321,21 +321,33 @@ def plot_convergence_rate(
     # plot the convergence rate against the layer
     plt.figure(figsize=(5, 3))
 
-    # Determine whether we have multiple series to plot
-    threshold_series = [1.0 / np.array(generation_achieve_threshold)]
+    # Ensure layer_counts and generation_achieve_threshold are 1D arrays and match in length
+    layer_counts_arr = np.array(layer_counts)
+    generation_achieve_threshold_arr = np.array(generation_achieve_threshold)
 
-    color_map = get_cmap("tab10", len(threshold_series))
+    # Filter out values where generation_achieve_threshold is -1 (did not achieve threshold)
+    valid_mask = generation_achieve_threshold_arr > 0
+    filtered_layer_counts = layer_counts_arr[valid_mask]
+    filtered_generation_achieve_threshold = generation_achieve_threshold_arr[valid_mask]
 
-    for idx, series in enumerate(threshold_series):
-        plt.plot(
-            layer_counts,
-            series,
-            marker="o",
-            linestyle="-",
-            linewidth=2,
-            color=color_map(idx),
-            label=labels[idx] if labels is not None else None,
-        )
+    if len(filtered_layer_counts) == 0 or len(filtered_generation_achieve_threshold) == 0:
+        # Nothing to plot!
+        return
+
+    # Compute convergence rates
+    convergence_rate = 1.0 / filtered_generation_achieve_threshold
+
+    # Plot the valid data
+    color_map = get_cmap("tab10", 1)
+    plt.plot(
+        filtered_layer_counts,
+        convergence_rate,
+        marker="o",
+        linestyle="-",
+        linewidth=2,
+        color=color_map(0),
+        label=labels[0] if labels is not None else None,
+    )
     plt.xlabel("Total number of layers", fontsize=14)
     plt.ylabel("Convergence rate (1/avg. gen. to optimality)", fontsize=14)
 
