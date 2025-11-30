@@ -340,8 +340,8 @@ def plot_convergence_rate(
             color=color_map(idx),
             label=current_label,
         )
-    plt.xlabel("Total number of layers", fontsize=14)
-    plt.ylabel("Convergence rate \n (1/avg. gen. to optimality)", fontsize=14)
+    plt.xlabel("Total number of layers", fontsize=12)
+    plt.ylabel("Convergence rate \n (1/avg. gen. to optimality)", fontsize=12)
 
     # remove top and right spines, remove grid
     plt.gca().spines["top"].set_visible(False)
