@@ -277,14 +277,9 @@ def plot_median_fitness_by_generation(
             fitness_runs, axis=(0, 1)
         ).tolist()  # shape: (n_generations,)
 
+        # normalize median for each layer by dividing by the median of the first layer
+        medians = np.array(medians) / np.array(medians[0])
         plt.plot(range(n_generations), medians, label=f"{layer} layers", linewidth=2)
-
-        try:
-            generation_achieve_threshold[idx] = np.where(
-                np.array(medians) >= threshold
-            )[0][0]
-        except IndexError:
-            generation_achieve_threshold[idx] = -1  # or handle as appropriate
 
     # Axis settings
     plt.xlabel("Generations", fontsize=16)
