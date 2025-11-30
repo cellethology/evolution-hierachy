@@ -276,11 +276,7 @@ def plot_median_fitness_by_generation(
         fitness_runs = (
             fitness_runs * fitness_runs.shape[1]
         )  # Multiply by population size
-        means = []
-
-        for gen in range(n_generations):
-            all_min = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
-            means.append(np.mean(all_min))
+        means = np.mean(fitness_runs, axis=(0, 1)).tolist()  # shape: (n_generations,)
 
         plt.plot(range(n_generations), means, label=f"{layer} layers", linewidth=2)
 
@@ -293,7 +289,7 @@ def plot_median_fitness_by_generation(
 
     # Axis settings
     plt.xlabel("Generations", fontsize=16)
-    plt.ylabel("Mean (min fitness)", fontsize=16)
+    plt.ylabel("Mean fitness", fontsize=16)
 
     # Legend settings
     plt.legend(fontsize=11)
