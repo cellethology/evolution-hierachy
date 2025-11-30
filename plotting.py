@@ -321,33 +321,14 @@ def plot_convergence_rate(
     # plot the convergence rate against the layer
     plt.figure(figsize=(5, 3))
 
-    # Determine whether we have multiple series to plot
-    if isinstance(generation_achieve_threshold, np.ndarray):
-        if generation_achieve_threshold.ndim == 1:
-            threshold_series = [generation_achieve_threshold]
-        else:
-            threshold_series = list(generation_achieve_threshold)
-    elif isinstance(generation_achieve_threshold, (list, tuple)):
-        if (
-            len(generation_achieve_threshold) > 0
-            and isinstance(
-                generation_achieve_threshold[0], (list, tuple, np.ndarray)
-            )
-        ):
-            threshold_series = list(generation_achieve_threshold)
-        else:
-            threshold_series = [generation_achieve_threshold]
-    else:
-        threshold_series = [generation_achieve_threshold]
-
-    if labels is not None and len(labels) != len(threshold_series):
+    if labels is not None and len(labels) != len(generation_achieve_threshold):
         raise ValueError(
             "Length of labels must match the number of convergence rate series."
         )
 
-    color_map = get_cmap("tab10", len(threshold_series))
+    color_map = get_cmap("tab10", len(generation_achieve_threshold))
 
-    for idx, series in enumerate(threshold_series):
+    for idx, series in enumerate(generation_achieve_threshold):
         current_label = labels[idx] if labels is not None else None
         convergence = 1.0 / np.array(series, dtype=float)
         plt.plot(
@@ -368,7 +349,7 @@ def plot_convergence_rate(
     plt.grid(False)
     plt.tight_layout()
     plt.yscale("log")
-    if labels is not None or len(threshold_series) > 1:
+    if labels is not None or len(generation_achieve_threshold) > 1:
         plt.legend(frameon=False)
 
     if save:
