@@ -46,7 +46,7 @@ def _(layer_stats, plotting):
 
 @app.cell
 def _(evolution):
-    list_of_max_depth = [1, 5, 10, 15]
+    list_of_max_depth = [1, 2, 4, 6]
 
     fitness = {}
     mean_optimality = {}
@@ -56,14 +56,14 @@ def _(evolution):
         fitness[str(max_depth)] = {}
         mean_optimality[str(max_depth)] = {}
         res = evolution.parallel_run_evolution(
-            32 * 200,
-            n_generations=80,
-            population_size=50,
+            32 * 20,
+            n_generations=100,
+            population_size=300,
             mutation_std=0.2,
             mutation_rate=1,
             eval_fraction=1,
             max_depth=max_depth,
-            dim=10,
+            dim=20,
             normalize=True,
             use_sigmoid=False,
             nonlinear_fitness=False,
@@ -82,19 +82,30 @@ def _(evolution):
 
 @app.cell
 def _(fitness, plotting):
-    (
-        layer_counts,
-        generation_achieve_threshold,
-    ) = plotting.plot_median_fitness_by_generation(fitness, threshold=0.9, save=True)
+    def _():
+        (
+            layer_counts,
+            generation_achieve_threshold,
+        ) = plotting.plot_median_fitness_by_generation(fitness, figsize=(4.5, 3), threshold=1.5, save=True)
+        return layer_counts, generation_achieve_threshold
 
-    plotting.plot_generation_to_optimality(
-        layer_counts, generation_achieve_threshold, save=True
-    )
+
+    layer_counts, generation_achieve_threshold = _()
     return generation_achieve_threshold, layer_counts
 
 
 @app.cell
 def _():
+    high_pop = [13, 8, 4, 3]
+    low_pop = [107, 27, 7, 5]
+    return high_pop, low_pop
+
+
+@app.cell
+def _(high_pop, layer_counts, low_pop, plotting):
+    plotting.plot_convergence_rate(
+        layer_counts, [high_pop, low_pop], labels=['high population', 'low population'], figsize=(4,3), save=True
+    )
     return
 
 
