@@ -315,16 +315,27 @@ def plot_median_fitness_by_generation(
     return layer_counts, generation_achieve_threshold
 
 
-def plot_convergence_rate(layer_counts, generation_achieve_threshold, save=False):
+def plot_convergence_rate(
+    layer_counts, generation_achieve_threshold, labels=None, save=False
+):
     # plot the convergence rate against the layer
     plt.figure(figsize=(5, 3))
-    plt.plot(
-        layer_counts,
-        1.0 / np.array(generation_achieve_threshold),  # convergence rate
-        marker="o",
-        linestyle="-",
-        linewidth=2,
-    )
+
+    # Determine whether we have multiple series to plot
+    threshold_series = [1.0 / np.array(generation_achieve_threshold)]
+
+    color_map = get_cmap("tab10", len(threshold_series))
+
+    for idx, series in enumerate(threshold_series):
+        plt.plot(
+            layer_counts,
+            series,
+            marker="o",
+            linestyle="-",
+            linewidth=2,
+            color=color_map(idx),
+            label=labels[idx] if labels is not None else None,
+        )
     plt.xlabel("Total number of layers", fontsize=14)
     plt.ylabel("Convergence rate (1/avg. gen. to optimality)", fontsize=14)
 
@@ -334,6 +345,8 @@ def plot_convergence_rate(layer_counts, generation_achieve_threshold, save=False
     plt.grid(False)
     plt.tight_layout()
     plt.yscale("log")
+    if labels is not None:
+        plt.legend(frameon=False)
 
     if save:
         plt.savefig("output/convergence_rate.pdf", format="pdf", dpi=300)
