@@ -273,9 +273,6 @@ def plot_median_fitness_by_generation(
         fitness_runs = fitness_by_layer[
             layer
         ]  # shape: (n_runs, population_size, n_generations)
-        fitness_runs = (
-            fitness_runs * fitness_runs.shape[1]
-        )  # Multiply by population size
         means = np.mean(fitness_runs, axis=(0, 1)).tolist()  # shape: (n_generations,)
 
         plt.plot(range(n_generations), means, label=f"{layer} layers", linewidth=2)
