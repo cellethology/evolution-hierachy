@@ -99,21 +99,16 @@ def run_evolution(
         "fitness": np.zeros((population_size, n_generations)),
     }
 
-    # Compute optimal outputs at each layer
-    optimal_outputs = system._backward_pass(optimal_direction.reshape(1, -1))
-
-    # Initialize population near optimal genotype
-    # population = np.tile(optimal_outputs[0][0], (population_size,1))
+    # Compute optimal outputs at each layer using forward pass
+    optimal_outputs = system._forward_pass(optimal_direction.reshape(1, -1))
 
     for gen in range(n_generations):
         # Forward pass through all layers
         layer_outputs = system._forward_pass(population)
 
         # Track statistics at each layer
-        for layer_idx, (layer_out, opt_out) in enumerate(
-            zip(layer_outputs, optimal_outputs)
-        ):
-            angles = system._compute_cossim(layer_out, opt_out[0])
+        for layer_idx, layer_out in enumerate(layer_outputs):
+            angles = system._compute_cossim(layer_out, optimal_outputs[layer_idx][0])
             layer_stats["mean"][layer_idx, gen] = np.mean(angles)
             layer_stats["stdev"][layer_idx, gen] = np.std(angles)
             layer_stats["ancestry_proportions"][:, gen] = np.mean(
@@ -122,7 +117,7 @@ def run_evolution(
 
         # Selection
         cossim = compute_cosine_similarity_subset(
-            layer_outputs[-1], optimal_outputs[-1][0], eval_dims
+            layer_outputs[-1], optimal_outputs[-1], eval_dims
         )
         fitness = similarity_to_selection_probs(
             cossim, nonlinear_fitness=nonlinear_fitness, omega=omega

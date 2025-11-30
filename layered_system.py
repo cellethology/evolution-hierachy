@@ -91,6 +91,7 @@ class LayeredSystem:
             current = current @ M_d_T_pinv
             outputs.append(current.copy())
 
+        # Reverse the outputs to get the correct order
         outputs.reverse()
         return outputs
 
