@@ -35,7 +35,7 @@ def similarity_to_selection_probs(
     # Compute softmax
     scaled = adjusted / temperature
     adjusted = np.exp(scaled - np.max(scaled))  # for numerical stability
-    return adjusted / np.sum(adjusted)
+    return adjusted
 
 
 def mutate_population_subset(population, mutation_std, mutation_rate):
