@@ -282,8 +282,8 @@ def plot_median_fitness_by_generation(
         plt.plot(range(n_generations), medians, label=f"{layer} layers", linewidth=2)
 
     # Axis settings
-    plt.xlabel("Generations", fontsize=16)
-    plt.ylabel("Median fitness", fontsize=16)
+    plt.xlabel("Generations", fontsize=12)
+    plt.ylabel("Median fitness", fontsize=12)
 
     # Legend settings
     plt.legend(fontsize=11, frameon=False)
@@ -295,7 +295,7 @@ def plot_median_fitness_by_generation(
     ax.spines["right"].set_visible(False)
 
     # Ticks font size
-    ax.tick_params(axis="both", which="major", labelsize=13)
+    ax.tick_params(axis="both", which="major", labelsize=11)
 
     # plot horizontal line at y=0.9
     plt.axhline(y=threshold, color="black", linestyle="--", linewidth=1)
