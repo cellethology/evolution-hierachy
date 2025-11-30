@@ -117,7 +117,7 @@ def run_evolution(
 
         # Selection
         cossim = compute_cosine_similarity_subset(
-            layer_outputs[-1], optimal_outputs[-1], eval_dims
+            layer_outputs[-1], optimal_outputs[-1][0], eval_dims
         )
         fitness = similarity_to_selection_probs(
             cossim, nonlinear_fitness=nonlinear_fitness, omega=omega
