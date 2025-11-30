@@ -247,7 +247,7 @@ def plot_fitness_violin_by_layer(
 
 
 def plot_median_fitness_by_generation(
-    fitness_by_layer, figsize=(5, 3), threshold=0.9, save=False
+    fitness_by_layer, figsize=(4, 3), threshold=0.9, save=False
 ):
     """
     Plot a line graph of the median of np.ptp(fitness_gen) across all simulations
@@ -319,10 +319,10 @@ def plot_median_fitness_by_generation(
 
 
 def plot_convergence_rate(
-    layer_counts, generation_achieve_threshold, labels=None, save=False
+    layer_counts, generation_achieve_threshold, figsize=(5, 3), labels=None, save=False
 ):
     # plot the convergence rate against the layer
-    plt.figure(figsize=(5, 3))
+    plt.figure(figsize=figsize)
 
     if labels is not None and len(labels) != len(generation_achieve_threshold):
         raise ValueError(
