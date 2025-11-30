@@ -100,7 +100,7 @@ def run_evolution(
     }
 
     # Compute optimal outputs at each layer using forward pass
-    optimal_outputs = system._backward_pass(optimal_direction.reshape(1, -1))
+    optimal_outputs = system._forward_pass(optimal_direction.reshape(1, -1))
 
     for gen in range(n_generations):
         # Forward pass through all layers
