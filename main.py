@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.13.6"
+__generated_with = "0.12.7"
 app = marimo.App(width="medium")
 
 
@@ -58,34 +58,43 @@ def _(evolution):
         res = evolution.parallel_run_evolution(
             32 * 200,
             n_generations=80,
-            population_size=20,
-            mutation_std=0.1,
+            population_size=50,
+            mutation_std=0.2,
             mutation_rate=1,
             eval_fraction=1,
             max_depth=max_depth,
             dim=10,
             normalize=True,
             use_sigmoid=False,
+            nonlinear_fitness=False,
         )
         fitness[str(max_depth)] = res["fitness"]
         mean_optimality[str(max_depth)] = res["mean"]
-    return mean_optimality, mock_fitness
+    return (
+        fitness,
+        list_of_max_depth,
+        max_depth,
+        mean_optimality,
+        mock_fitness,
+        res,
+    )
 
 
 @app.cell
-def _(mock_fitness, plotting):
+def _(fitness, plotting):
     (
         layer_counts,
         generation_achieve_threshold,
-    ) = plotting.plot_median_fitness_by_generation(mock_fitness, save=True)
+    ) = plotting.plot_median_fitness_by_generation(fitness, threshold=0.9, save=True)
+
+    plotting.plot_generation_to_optimality(
+        layer_counts, generation_achieve_threshold, save=True
+    )
     return generation_achieve_threshold, layer_counts
 
 
 @app.cell
-def _(generation_achieve_threshold, layer_counts, plotting):
-    plotting.plot_generation_to_optimality(
-        layer_counts, generation_achieve_threshold, save=True
-    )
+def _():
     return
 
 
