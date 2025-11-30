@@ -281,7 +281,7 @@ def plot_median_fitness_by_generation(
         for gen in range(n_generations):
             all_min = [np.min(run_fitness[:, gen]) for run_fitness in fitness_runs]
             means.append(np.mean(all_min))
-        print(means)
+
         plt.plot(range(n_generations), means, label=f"{layer} layers", linewidth=2)
 
         try:
