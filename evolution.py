@@ -33,8 +33,8 @@ def similarity_to_selection_probs(
         mod = (np.cos(omega * (1 - adjusted)) + 1) / 2  # ∈ [0,1], =1 at x≈1
         adjusted *= mod
     # Compute softmax
-    scaled = adjusted / temperature
-    adjusted = np.exp(scaled - np.max(scaled))  # for numerical stability
+    # scaled = adjusted / temperature
+    # adjusted = np.exp(scaled - np.max(scaled))  # for numerical stability
     return adjusted
 
 
