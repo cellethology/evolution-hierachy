@@ -299,7 +299,7 @@ def plot_median_fitness_by_generation(
 
     # plot horizontal line at y=0.9
     plt.axhline(y=threshold, color="black", linestyle="--", linewidth=1)
-    plt.yscale("log")
+    # plt.yscale("log")
 
     plt.tight_layout()
 
