@@ -247,7 +247,7 @@ def plot_fitness_violin_by_layer(
 
 
 def plot_median_fitness_by_generation(
-    fitness_by_layer, figsize=(7, 4), threshold=0.9, save=False
+    fitness_by_layer, figsize=(5, 3), threshold=0.9, save=False
 ):
     """
     Plot a line graph of the median of np.ptp(fitness_gen) across all simulations
