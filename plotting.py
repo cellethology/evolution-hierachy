@@ -279,6 +279,7 @@ def plot_median_fitness_by_generation(
 
         # normalize median for each layer by dividing by the median of the first layer
         medians = np.array(medians) / np.array(medians[0])
+        print(medians)
         plt.plot(range(n_generations), medians, label=f"{layer} layers", linewidth=2)
 
     # Axis settings
@@ -299,9 +300,6 @@ def plot_median_fitness_by_generation(
 
     # plot horizontal line at y=0.9
     plt.axhline(y=threshold, color="black", linestyle="--", linewidth=1)
-
-    # ax.set_ylim((0.88, 0.91))
-    # ax.set_xlim((12, 80))
     plt.xscale("log")
 
     plt.tight_layout()
