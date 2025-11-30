@@ -273,20 +273,22 @@ def plot_median_fitness_by_generation(
         fitness_runs = fitness_by_layer[
             layer
         ]  # shape: (n_runs, population_size, n_generations)
-        means = np.mean(fitness_runs, axis=(0, 1)).tolist()  # shape: (n_generations,)
+        medians = np.median(
+            fitness_runs, axis=(0, 1)
+        ).tolist()  # shape: (n_generations,)
 
-        plt.plot(range(n_generations), means, label=f"{layer} layers", linewidth=2)
+        plt.plot(range(n_generations), medians, label=f"{layer} layers", linewidth=2)
 
         try:
-            generation_achieve_threshold[idx] = np.where(np.array(means) >= threshold)[
-                0
-            ][0]
+            generation_achieve_threshold[idx] = np.where(
+                np.array(medians) >= threshold
+            )[0][0]
         except IndexError:
             generation_achieve_threshold[idx] = -1  # or handle as appropriate
 
     # Axis settings
     plt.xlabel("Generations", fontsize=16)
-    plt.ylabel("Mean fitness", fontsize=16)
+    plt.ylabel("Median fitness", fontsize=16)
 
     # Legend settings
     plt.legend(fontsize=11)
@@ -301,10 +303,11 @@ def plot_median_fitness_by_generation(
     ax.tick_params(axis="both", which="major", labelsize=13)
 
     # plot horizontal line at y=0.9
-    # plt.axhline(y=0.9, color="black", linestyle="--", linewidth=1)
+    plt.axhline(y=threshold, color="black", linestyle="--", linewidth=1)
 
     # ax.set_ylim((0.88, 0.91))
     # ax.set_xlim((12, 80))
+    plt.xscale("log")
 
     plt.tight_layout()
 
