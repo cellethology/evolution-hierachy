@@ -320,7 +320,7 @@ def plot_convergence_rate(layer_counts, generation_achieve_threshold, save=False
     plt.figure(figsize=(5, 3))
     plt.plot(
         layer_counts,
-        1 / generation_achieve_threshold,  # convergence rate
+        1.0 / np.array(generation_achieve_threshold),  # convergence rate
         marker="o",
         linestyle="-",
         linewidth=2,
