@@ -321,16 +321,21 @@ def plot_convergence_rate(
     # plot the convergence rate against the layer
     plt.figure(figsize=(5, 3))
 
-    # Ensure layer_counts and generation_achieve_threshold are 1D arrays and match in length
-    layer_counts_arr = np.array(layer_counts)
-    generation_achieve_threshold_arr = np.array(generation_achieve_threshold)
+    # Convert to numpy arrays and flatten to 1D in case they are not
+    layer_counts_arr = np.array(layer_counts).flatten()
+    generation_achieve_threshold_arr = np.array(generation_achieve_threshold).flatten()
 
     # Filter out values where generation_achieve_threshold is -1 (did not achieve threshold)
     valid_mask = generation_achieve_threshold_arr > 0
+
+    # Ensure the mask is boolean and matches the array shapes
     filtered_layer_counts = layer_counts_arr[valid_mask]
     filtered_generation_achieve_threshold = generation_achieve_threshold_arr[valid_mask]
 
-    if len(filtered_layer_counts) == 0 or len(filtered_generation_achieve_threshold) == 0:
+    if (
+        filtered_layer_counts.size == 0
+        or filtered_generation_achieve_threshold.size == 0
+    ):
         # Nothing to plot!
         return
 
