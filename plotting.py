@@ -315,29 +315,28 @@ def plot_median_fitness_by_generation(
     return layer_counts, generation_achieve_threshold
 
 
-def plot_generation_to_optimality(
-    layer_counts, generation_achieve_threshold, save=False
-):
-    # plot the generation to achieves the threshold against the layer
+def plot_convergence_rate(layer_counts, generation_achieve_threshold, save=False):
+    # plot the convergence rate against the layer
     plt.figure(figsize=(5, 3))
     plt.plot(
         layer_counts,
-        generation_achieve_threshold,
+        1 / generation_achieve_threshold,  # convergence rate
         marker="o",
         linestyle="-",
         linewidth=2,
     )
     plt.xlabel("Total number of layers", fontsize=14)
-    plt.ylabel("Avg. generation \n to convergence", fontsize=14)
+    plt.ylabel("Convergence rate (1/avg. gen. to optimality)", fontsize=14)
 
     # remove top and right spines, remove grid
     plt.gca().spines["top"].set_visible(False)
     plt.gca().spines["right"].set_visible(False)
     plt.grid(False)
     plt.tight_layout()
+    plt.yscale("log")
 
     if save:
-        plt.savefig("output/generation_to_optimality.pdf", format="pdf", dpi=300)
+        plt.savefig("output/convergence_rate.pdf", format="pdf", dpi=300)
 
     plt.show()
 
