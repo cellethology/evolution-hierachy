@@ -57,16 +57,15 @@ def _(evolution):
         mean_optimality[str(max_depth)] = {}
         res = evolution.parallel_run_evolution(
             32 * 20,
-            n_generations=100,
-            population_size=300,
+            n_generations=200,
+            population_size=5,
             mutation_std=0.2,
             mutation_rate=1,
             eval_fraction=1,
             max_depth=max_depth,
             dim=20,
-            normalize=True,
-            use_sigmoid=False,
-            nonlinear_fitness=False,
+            normalize=False,
+            fix_initial_pop_distance=True,
         )
         fitness[str(max_depth)] = res["fitness"]
         mean_optimality[str(max_depth)] = res["mean"]
@@ -81,30 +80,42 @@ def _(evolution):
 
 
 @app.cell
+def _(fitness):
+    fitness
+    return
+
+
+@app.cell
 def _(fitness, plotting):
-    def _():
-        (
-            layer_counts,
-            generation_achieve_threshold,
-        ) = plotting.plot_median_fitness_by_generation(fitness, figsize=(4.5, 3), threshold=1.5, save=True)
-        return layer_counts, generation_achieve_threshold
-
-
-    layer_counts, generation_achieve_threshold = _()
+    layer_counts, generation_achieve_threshold = (
+        plotting.plot_median_fitness_by_generation(
+            fitness, figsize=(4.5, 3), threshold=0.7, save=True
+        )
+    )
     return generation_achieve_threshold, layer_counts
 
 
 @app.cell
+def _(generation_achieve_threshold):
+    generation_achieve_threshold
+    return
+
+
+@app.cell
 def _():
-    high_pop = [13, 8, 4, 3]
-    low_pop = [107, 27, 7, 5]
+    high_pop = [23, 18, 13, 11]
+    low_pop = [190, 53, 28, 19]
     return high_pop, low_pop
 
 
 @app.cell
 def _(high_pop, layer_counts, low_pop, plotting):
     plotting.plot_convergence_rate(
-        layer_counts, [high_pop, low_pop], labels=['high population', 'low population'], figsize=(4,3), save=True
+        layer_counts,
+        [high_pop, low_pop],
+        labels=["high population", "low population"],
+        figsize=(4, 3),
+        save=True,
     )
     return
 
