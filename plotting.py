@@ -273,12 +273,7 @@ def plot_median_fitness_by_generation(
         fitness_runs = fitness_by_layer[
             layer
         ]  # shape: (n_runs, population_size, n_generations)
-        medians = np.median(
-            fitness_runs, axis=(0, 1)
-        ).tolist()  # shape: (n_generations,)
-
-        # normalize median for each layer by dividing by the median of the first layer
-        medians = np.array(medians) / np.array(medians[0])
+        medians = np.median(fitness_runs, axis=(0, 1))
         plt.plot(range(n_generations), medians, label=f"{layer} layers", linewidth=2)
 
     # Axis settings
