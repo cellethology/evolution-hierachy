@@ -274,6 +274,8 @@ def plot_median_fitness_by_generation(
             layer
         ]  # shape: (n_runs, population_size, n_generations)
         medians = np.median(fitness_runs, axis=(0, 1))
+        # get generation number when the median fitness is greater than the threshold
+        generation_achieve_threshold[idx] = np.argmax(medians > threshold)
         plt.plot(range(n_generations), medians, label=f"{layer} layers", linewidth=2)
 
     # Axis settings
