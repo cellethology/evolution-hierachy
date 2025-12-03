@@ -95,6 +95,9 @@ def run_evolution(
         v = A @ y_star_col
         v = v.reshape(-1)
         population = sample_input_orthogonal_to_v(v, num_samples=population_size)
+
+        # normalize population
+        population = population / np.linalg.norm(population, axis=1, keepdims=True)
     else:
         population = uniform_sphere_gaussian(population_size, dim=system.dim)
 
