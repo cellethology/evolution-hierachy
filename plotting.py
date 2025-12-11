@@ -342,7 +342,7 @@ def plot_convergence_rate(
     plt.tight_layout()
     plt.yscale("log")
     if labels is not None or len(generation_achieve_threshold) > 1:
-        plt.legend(frameon=False)
+        plt.legend(frameon=False, fontsize=12)
 
     if save:
         plt.savefig("output/convergence_rate.pdf", format="pdf", dpi=300)
