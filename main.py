@@ -114,7 +114,7 @@ def _(high_pop, layer_counts, low_pop, plotting):
         layer_counts,
         [high_pop, low_pop],
         labels=["high population", "low population"],
-        figsize=(4, 3),
+        figsize=(5, 3),
         save=True,
     )
     return
